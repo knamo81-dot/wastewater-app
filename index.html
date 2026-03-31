@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>폐수 관리 앱</title>
+</head>
+<body>
+  <h1>폐수 관리 앱</h1>
+
+  <div>
+    날짜: <input type="date" id="date"><br><br>
+    용수 계량값(G): <input type="number" id="water"><br><br>
+    폐수 높이(Q): <input type="number" id="height"><br><br>
+    기타(P): <input type="text" id="etc"><br><br>
+
+    <button onclick="save()">저장</button>
+  </div>
+
+  <h2>데이터</h2>
+  <ul id="list"></ul>
+
+  <script src="app.js"></script>
+</body>
+</html>
