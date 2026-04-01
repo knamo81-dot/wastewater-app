@@ -30,7 +30,7 @@
 const SUPABASE_URL = "https://wjxyspuieuzfhfosmpin.supabase.co";
 const SUPABASE_KEY = "sb_publishable_efMuks4GrwR3WJ8k3ZOK_g_znTfJL1j";
 
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+window.sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let user = null;
 let currentRole = "user";
