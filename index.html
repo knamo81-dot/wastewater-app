@@ -1,67 +1,122 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>폐수 관리 앱</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>폐수 관리 앱 로그인 테스트</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 24px; }
+    .box { max-width: 480px; margin: 0 auto; }
+    input { width: 100%; padding: 10px; margin: 8px 0; }
+    button { padding: 10px 14px; margin-right: 8px; }
+    .err { color: #b91c1c; white-space: pre-wrap; }
+    .ok { color: #166534; }
+  </style>
 </head>
 <body>
+  <div class="box">
+    <div id="app">로딩 중...</div>
+  </div>
 
-<div id="app"></div>
+  <script>
+    const SUPABASE_URL = "https://wjxyspuieuzfhfosmpin.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_efMuks4GrwR3WJ8k3ZOK_g_znTfJL1j";
 
-<script>
-const SUPABASE_URL = "https://wjxyspuieuzfhfosmpin.supabase.co";
-const SUPABASE_KEY = "sb_publishable_efMuks4GrwR3WJ8k3ZOK_g_znTfJL1j";
+    function showError(title, err) {
+      const msg = typeof err === "string"
+        ? err
+        : (err && (err.message || JSON.stringify(err, null, 2))) || "알 수 없는 오류";
+      document.getElementById("app").innerHTML = `
+        <h2>오류 발생</h2>
+        <div class="err"><b>${title}</b>\n${msg}</div>
+      `;
+    }
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    function showLogin() {
+      document.getElementById("app").innerHTML = `
+        <h2>로그인</h2>
+        <input id="email" type="email" placeholder="이메일" />
+        <input id="password" type="password" placeholder="비밀번호" />
+        <button onclick="login()">로그인</button>
+        <button onclick="signup()">회원가입</button>
+      `;
+    }
 
-async function checkUser() {
-  const { data: { user } } = await supabase.auth.getUser();
+    function showLoggedIn(user) {
+      document.getElementById("app").innerHTML = `
+        <h2 class="ok">로그인 성공</h2>
+        <p>${user.email}</p>
+        <button onclick="logout()">로그아웃</button>
+      `;
+    }
 
-  if (!user) {
-    document.getElementById("app").innerHTML = `
-      <h2>로그인</h2>
-      <input id="email" placeholder="이메일"><br><br>
-      <input id="password" type="password" placeholder="비밀번호"><br><br>
-      <button onclick="login()">로그인</button>
-      <button onclick="signup()">회원가입</button>
-    `;
-  } else {
-    document.getElementById("app").innerHTML = `
-      <h2>로그인 성공</h2>
-      <p>${user.email}</p>
-      <button onclick="logout()">로그아웃</button>
-    `;
-  }
-}
+    let supabase;
 
-async function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+    async function init() {
+      try {
+        if (!window.supabase || !window.supabase.createClient) {
+          throw new Error("Supabase CDN 로딩 실패");
+        }
 
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  if (error) alert("로그인 실패");
-  else location.reload();
-}
+        const { data, error } = await supabase.auth.getUser();
+        if (error) throw error;
 
-async function signup() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+        if (data && data.user) {
+          showLoggedIn(data.user);
+        } else {
+          showLogin();
+        }
+      } catch (err) {
+        showError("초기화 실패", err);
+      }
+    }
 
-  const { error } = await supabase.auth.signUp({ email, password });
+    async function login() {
+      try {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
 
-  if (error) alert("회원가입 실패");
-  else alert("가입 완료! 로그인하세요");
-}
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
 
-async function logout() {
-  await supabase.auth.signOut();
-  location.reload();
-}
+        location.reload();
+      } catch (err) {
+        showError("로그인 실패", err);
+      }
+    }
 
-checkUser();
-</script>
+    async function signup() {
+      try {
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
 
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
+
+        document.getElementById("app").innerHTML += `<p class="ok">회원가입 요청 완료. 이메일 확인 후 로그인해 주세요.</p>`;
+      } catch (err) {
+        showError("회원가입 실패", err);
+      }
+    }
+
+    async function logout() {
+      try {
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        location.reload();
+      } catch (err) {
+        showError("로그아웃 실패", err);
+      }
+    }
+
+    window.login = login;
+    window.signup = signup;
+    window.logout = logout;
+
+    init();
+  </script>
 </body>
 </html>
