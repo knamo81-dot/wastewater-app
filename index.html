@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>폐수 관리 앱</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-body { font-family: Arial; padding:20px; background:#f5f7fa; }
-.card { background:#fff; padding:20px; border-radius:10px; }
-input, textarea { width:100%; margin-bottom:10px; padding:8px; }
-button { padding:8px 12px; margin-right:5px; }
-table { width:100%; margin-top:20px; border-collapse:collapse; }
-th, td { border:1px solid #ddd; padding:8px; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>폐수 관리 앱</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f5f7fa; }
+    .card { background: #fff; padding: 20px; border-radius: 12px; max-width: 1100px; margin: 0 auto; }
+    input, textarea, select { width: 100%; margin-bottom: 10px; padding: 10px; box-sizing: border-box; }
+    button { padding: 8px 12px; margin-right: 5px; cursor: pointer; }
+    table { width: 100%; margin-top: 20px; border-collapse: collapse; background: #fff; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: top; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .half { flex: 1 1 300px; }
+    .muted { color: #666; font-size: 14px; }
+    .msg { margin-top: 10px; white-space: pre-wrap; }
+    .err { color: #b91c1c; }
+    .ok { color: #166534; }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .admin-box { margin-top: 24px; padding: 16px; border: 1px solid #ddd; border-radius: 10px; background: #fafafa; }
+  </style>
 </head>
 <body>
 
@@ -25,26 +33,30 @@ const SUPABASE_KEY = "sb_publishable_efMuks4GrwR3WJ8k3ZOK_g_znTfJL1j";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let user = null;
+let currentRole = "user";
 let dataList = [];
+let userList = [];
 
 async function init() {
   const { data } = await sb.auth.getSession();
   if (data.session) {
     user = data.session.user;
-    loadData();
+    await loadMyRole();
+    await loadData();
   } else {
     renderLogin();
   }
 }
 
-function renderLogin() {
+function renderLogin(message = "", cls = "muted") {
   document.getElementById('app').innerHTML = `
-    <div class="card">
+    <div class="card" style="max-width:420px;">
       <h2>로그인</h2>
       <input id="email" placeholder="이메일">
       <input id="password" type="password" placeholder="비밀번호">
       <button onclick="login()">로그인</button>
       <button onclick="signup()">회원가입</button>
+      <div class="msg ${cls}">${message || "로그인 또는 회원가입을 진행하세요."}</div>
     </div>
   `;
 }
@@ -54,7 +66,7 @@ async function login() {
   const password = document.getElementById('password').value;
 
   const { error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) return alert(error.message);
+  if (error) return renderLogin(error.message, "err");
 
   init();
 }
@@ -64,9 +76,9 @@ async function signup() {
   const password = document.getElementById('password').value;
 
   const { error } = await sb.auth.signUp({ email, password });
-  if (error) return alert(error.message);
+  if (error) return renderLogin(error.message, "err");
 
-  alert("회원가입 완료");
+  renderLogin("회원가입 완료. 바로 로그인하세요.", "ok");
 }
 
 async function logout() {
@@ -74,13 +86,46 @@ async function logout() {
   location.reload();
 }
 
-async function loadData() {
-  const { data } = await sb.from('wastewater').select('*').order('date', { ascending:false });
-  dataList = data || [];
-  renderApp();
+async function loadMyRole() {
+  const { data, error } = await sb
+    .from('users')
+    .select('role')
+    .eq('email', user.email)
+    .single();
+
+  if (!error && data) {
+    currentRole = data.role;
+  } else {
+    currentRole = "user";
+  }
 }
 
-function renderApp() {
+async function loadData() {
+  const { data, error } = await sb
+    .from('wastewater')
+    .select('*')
+    .order('date', { ascending: false });
+
+  dataList = data || [];
+  await loadUsersIfAdmin();
+  renderApp(error ? error.message : "");
+}
+
+async function loadUsersIfAdmin() {
+  if (currentRole !== "admin") {
+    userList = [];
+    return;
+  }
+
+  const { data } = await sb
+    .from('users')
+    .select('*')
+    .order('email', { ascending: true });
+
+  userList = data || [];
+}
+
+function renderApp(message = "", msgClass = "muted") {
   const rows = dataList.map(d => `
     <tr>
       <td>${d.date}</td>
@@ -88,50 +133,198 @@ function renderApp() {
       <td>${d.height}</td>
       <td>${d.note || ''}</td>
       <td>${d.created_at}</td>
-      <td><button onclick="deleteRow(${d.id})">삭제</button></td>
+      <td>
+        ${(currentRole === "admin" || currentRole === "operator")
+          ? `<button onclick="deleteRow(${d.id})">삭제</button>`
+          : `-`}
+      </td>
     </tr>
   `).join('');
 
+  const adminSection = currentRole === "admin" ? `
+    <div class="admin-box">
+      <h3>관리자 기능</h3>
+      <div class="muted">현재 로그인: ${user.email} / 권한: ${currentRole}</div>
+      <table>
+        <tr>
+          <th>이메일</th>
+          <th>현재 권한</th>
+          <th>권한 변경</th>
+          <th>관리자 양도</th>
+        </tr>
+        ${userList.map(u => `
+          <tr>
+            <td>${u.email}</td>
+            <td>${u.role}</td>
+            <td>
+              <select id="role-${escapeId(u.email)}">
+                <option value="user" ${u.role === 'user' ? 'selected' : ''}>user</option>
+                <option value="operator" ${u.role === 'operator' ? 'selected' : ''}>operator</option>
+                <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>admin</option>
+              </select>
+              <button onclick="changeRole('${u.email}')">변경</button>
+            </td>
+            <td>
+              ${u.email !== user.email
+                ? `<button onclick="transferAdmin('${u.email}')">양도</button>`
+                : '-'}
+            </td>
+          </tr>
+        `).join('')}
+      </table>
+    </div>
+  ` : '';
+
   document.getElementById('app').innerHTML = `
     <div class="card">
-      <h2>폐수 관리</h2>
-      <button onclick="logout()">로그아웃</button>
+      <div class="toolbar">
+        <div>
+          <h2>폐수 관리</h2>
+          <div class="muted">로그인: ${user.email} / 권한: ${currentRole}</div>
+        </div>
+        <button onclick="logout()">로그아웃</button>
+      </div>
 
-      <input id="date" type="date">
-      <input id="usage" placeholder="용수">
-      <input id="height" placeholder="폐수 높이">
-      <textarea id="note" placeholder="기타"></textarea>
+      <div class="row">
+        <div class="half">
+          <input id="date" type="date">
+        </div>
+        <div class="half">
+          <input id="usage" placeholder="용수">
+        </div>
+      </div>
 
-      <button onclick="saveData()">저장</button>
+      <div class="row">
+        <div class="half">
+          <input id="height" placeholder="폐수 높이">
+        </div>
+        <div class="half">
+          <textarea id="note" placeholder="기타"></textarea>
+        </div>
+      </div>
+
+      ${currentRole === "admin" || currentRole === "operator"
+        ? `<button onclick="saveData()">저장</button>`
+        : `<div class="muted">일반 사용자는 조회만 가능합니다.</div>`}
+
+      <button onclick="loadData()">새로고침</button>
+
+      <div class="msg ${message ? msgClass : 'muted'}">${message || ''}</div>
 
       <table>
         <tr>
-          <th>날짜</th><th>용수</th><th>높이</th><th>기타</th><th>시간</th><th>삭제</th>
+          <th>날짜</th>
+          <th>용수</th>
+          <th>높이</th>
+          <th>기타</th>
+          <th>시간</th>
+          <th>삭제</th>
         </tr>
-        ${rows}
+        ${rows || `<tr><td colspan="6">저장된 데이터가 없습니다.</td></tr>`}
       </table>
+
+      ${adminSection}
     </div>
   `;
 }
 
 async function saveData() {
+  if (!(currentRole === "admin" || currentRole === "operator")) {
+    return renderApp("저장 권한이 없습니다.", "err");
+  }
+
   const date = document.getElementById('date').value;
   const usage = document.getElementById('usage').value;
   const height = document.getElementById('height').value;
   const note = document.getElementById('note').value;
 
-  await sb.from('wastewater').insert([{ date, usage, height, note }]);
+  if (!date || !usage || !height) {
+    return renderApp("날짜 / 용수 / 높이는 필수입니다.", "err");
+  }
 
-  loadData();
+  const { error } = await sb.from('wastewater').insert([{
+    date,
+    usage,
+    height,
+    note
+  }]);
+
+  if (error) return renderApp("저장 실패: " + error.message, "err");
+
+  await loadData();
+  renderApp("저장 완료", "ok");
 }
 
 async function deleteRow(id) {
-  if (!confirm('삭제하시겠습니까?')) return;
+  if (!(currentRole === "admin" || currentRole === "operator")) {
+    return renderApp("삭제 권한이 없습니다.", "err");
+  }
 
-  await sb.from('wastewater').delete().eq('id', id);
+  if (!confirm("삭제하시겠습니까?")) return;
 
-  loadData();
+  const { error } = await sb.from('wastewater').delete().eq('id', id);
+  if (error) return renderApp("삭제 실패: " + error.message, "err");
+
+  await loadData();
+  renderApp("삭제 완료", "ok");
 }
+
+async function changeRole(email) {
+  if (currentRole !== "admin") {
+    return renderApp("관리자만 권한 변경 가능합니다.", "err");
+  }
+
+  const newRole = document.getElementById(`role-${escapeId(email)}`).value;
+
+  const { error } = await sb
+    .from('users')
+    .update({ role: newRole })
+    .eq('email', email);
+
+  if (error) return renderApp("권한 변경 실패: " + error.message, "err");
+
+  await loadData();
+  renderApp("권한 변경 완료", "ok");
+}
+
+async function transferAdmin(targetEmail) {
+  if (currentRole !== "admin") {
+    return renderApp("관리자만 양도 가능합니다.", "err");
+  }
+
+  if (!confirm(`${targetEmail} 에게 관리자 권한을 양도하시겠습니까?`)) return;
+
+  const demote = await sb
+    .from('users')
+    .update({ role: 'operator' })
+    .eq('email', user.email);
+
+  if (demote.error) return renderApp("현재 관리자 권한 변경 실패: " + demote.error.message, "err");
+
+  const promote = await sb
+    .from('users')
+    .update({ role: 'admin' })
+    .eq('email', targetEmail);
+
+  if (promote.error) return renderApp("양도 실패: " + promote.error.message, "err");
+
+  await loadMyRole();
+  await loadData();
+  renderApp("관리자 양도 완료", "ok");
+}
+
+function escapeId(email) {
+  return email.replace(/[^a-zA-Z0-9]/g, "_");
+}
+
+window.login = login;
+window.signup = signup;
+window.logout = logout;
+window.saveData = saveData;
+window.deleteRow = deleteRow;
+window.changeRole = changeRole;
+window.transferAdmin = transferAdmin;
+window.loadData = loadData;
 
 init();
 </script>
