@@ -345,6 +345,7 @@ const MAX_TON_M3 = 7;
 let user = null;
 let currentRole = 'user';
 let currentTab = 'daily';
+let ledgerMonthFilter = '';
 let dailyRows = [];
 let pickupRows = [];
 let userRows = [];
@@ -374,6 +375,10 @@ function canWrite() { return currentRole === 'admin' || currentRole === 'operato
 function canDelete() { return currentRole === 'admin' || currentRole === 'operator'; }
 function canAdmin() { return currentRole === 'admin'; }
 function monthKeyFromDate(v) { return String(v || '').slice(0, 7); }
+function getDefaultLedgerMonth() {
+  const sourceDate = dailyRows.length ? dailyRows[0].date : new Date().toISOString().slice(0, 10);
+  return monthKeyFromDate(sourceDate);
+}
 function downloadFile(filename, content, mime) {
   const blob = new Blob([content], { type: mime });
   const url = URL.createObjectURL(blob);
@@ -475,6 +480,7 @@ async function loadAll(message = '', cls = 'muted') {
 
   dailyRows = dailyRes.data || [];
   pickupRows = pickupRes.data || [];
+  if (!ledgerMonthFilter) ledgerMonthFilter = getDefaultLedgerMonth();
   userRows = usersRes.data || [];
   logRows = logsRes.data || [];
   renderApp(message, cls);
@@ -543,6 +549,7 @@ function getDerivedStats() {
 function renderApp(message = '', cls = 'muted') {
   const stats = getDerivedStats();
   const latestDaily = stats.latest;
+  const filteredLedgerRows = stats.enrichedDaily.filter(row => !ledgerMonthFilter || monthKeyFromDate(row.date) === ledgerMonthFilter);
   const latestMeter = latestDaily ? Number(latestDaily.usage || 0) : 0;
 
   document.getElementById('app').innerHTML = `
@@ -670,7 +677,7 @@ function renderApp(message = '', cls = 'muted') {
               <div class="msg muted">날짜 기준 내림차순 정렬입니다. 중간 날짜를 삭제하거나 나중에 입력해도 최신 날짜가 위로 올라옵니다.</div>
             </div>
             <div class="toolbar-right">
-              <input id="export-month" class="input" type="month" style="width:180px; margin:0;">
+              <input id="ledger-month" class="input" type="month" value="${ledgerMonthFilter}" style="width:180px; margin:0;" onchange="changeLedgerMonth(this.value)">
               <button class="btn soft" onclick="downloadMonthlyExcel()">월별 엑셀 다운로드</button>
             </div>
           </div>
@@ -693,7 +700,7 @@ function renderApp(message = '', cls = 'muted') {
                 </tr>
               </thead>
               <tbody>
-                ${renderLedgerRows(stats.enrichedDaily)}
+                ${renderLedgerRows(filteredLedgerRows)}
               </tbody>
             </table>
           </div>
@@ -805,6 +812,11 @@ function renderLedgerRows(rows) {
 
 function switchTab(tab) {
   currentTab = tab;
+  renderApp();
+}
+
+function changeLedgerMonth(value) {
+  ledgerMonthFilter = value;
   renderApp();
 }
 
@@ -974,7 +986,7 @@ function seedSampleData() {
 }
 
 function downloadMonthlyExcel() {
-  const month = document.getElementById('export-month')?.value || monthKeyFromDate(new Date().toISOString().slice(0, 10));
+  const month = document.getElementById('ledger-month')?.value || ledgerMonthFilter || monthKeyFromDate(new Date().toISOString().slice(0, 10));
   const stats = getDerivedStats();
   const ledgerRows = [...stats.enrichedDaily].filter(r => monthKeyFromDate(r.date) === month)
     .sort((a, b) => String(b.date).localeCompare(String(a.date)) || String(b.created_at || '').localeCompare(String(a.created_at || '')));
@@ -1057,6 +1069,7 @@ window.login = login;
 window.signup = signup;
 window.logout = logout;
 window.switchTab = switchTab;
+window.changeLedgerMonth = changeLedgerMonth;
 window.updateDailyPreview = updateDailyPreview;
 window.toggleExternalBox = toggleExternalBox;
 window.saveDailyRow = saveDailyRow;
