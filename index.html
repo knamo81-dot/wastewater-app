@@ -41,6 +41,7 @@ async function init() {
   const { data } = await sb.auth.getSession();
   if (data.session) {
     user = data.session.user;
+    await ensureUserRow(user.email);
     await loadMyRole();
     await loadData();
   } else {
@@ -68,6 +69,7 @@ async function login() {
   const { error } = await sb.auth.signInWithPassword({ email, password });
   if (error) return renderLogin(error.message, "err");
 
+  await ensureUserRow(email);
   init();
 }
 
@@ -78,12 +80,36 @@ async function signup() {
   const { error } = await sb.auth.signUp({ email, password });
   if (error) return renderLogin(error.message, "err");
 
+  await ensureUserRow(email);
   renderLogin("회원가입 완료. 바로 로그인하세요.", "ok");
 }
 
 async function logout() {
   await sb.auth.signOut();
   location.reload();
+}
+
+async function ensureUserRow(email) {
+  const { data, error } = await sb
+    .from('users')
+    .select('email')
+    .eq('email', email)
+    .maybeSingle();
+
+  if (error) {
+    console.error('users 조회 실패', error);
+    return;
+  }
+
+  if (!data) {
+    const { error: insertError } = await sb
+      .from('users')
+      .insert([{ email: email, role: 'user' }]);
+
+    if (insertError) {
+      console.error('users 자동 등록 실패', insertError);
+    }
+  }
 }
 
 async function loadMyRole() {
@@ -203,7 +229,7 @@ function renderApp(message = "", msgClass = "muted") {
         </div>
       </div>
 
-      ${currentRole === "admin" || currentRole === "operator"
+      ${(currentRole === "admin" || currentRole === "operator")
         ? `<button onclick="saveData()">저장</button>`
         : `<div class="muted">일반 사용자는 조회만 가능합니다.</div>`}
 
