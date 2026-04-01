@@ -3,128 +3,698 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>폐수 관리 앱</title>
+  <title>폐수배출시설 운영일지</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body { font-family: Arial, sans-serif; padding: 24px; }
-    #app { max-width: 480px; margin: 0 auto; }
-    input { width: 100%; padding: 10px; margin: 8px 0; box-sizing: border-box; }
-    button { padding: 10px 14px; margin-right: 8px; }
-    .err { color: #b91c1c; white-space: pre-wrap; }
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --line: #dbe2ea;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #0f172a;
+      --danger: #b91c1c;
+      --danger-bg: #fee2e2;
+      --ok-bg: #dcfce7;
+      --ok-text: #166534;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    h1 { margin: 0 0 8px; font-size: 32px; }
+    .sub { color: var(--muted); margin-bottom: 20px; }
+    .auth-box {
+      max-width: 420px;
+      margin: 60px auto;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    .auth-box h2 { margin-top: 0; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+    .label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+    .value { font-size: 24px; font-weight: 700; }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      border: 1px solid var(--line);
+      background: white;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+    .tab { display: none; }
+    .tab.active { display: block; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 16px;
+    }
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      font-size: 14px;
+      background: white;
+    }
+    textarea { min-height: 88px; resize: vertical; }
+    .btn {
+      border: none;
+      background: var(--primary);
+      color: white;
+      padding: 12px 14px;
+      border-radius: 10px;
+      width: 100%;
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .btn.secondary {
+      background: white;
+      color: var(--text);
+      border: 1px solid var(--line);
+      width: auto;
+    }
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .smallbox {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      background: white;
+    }
+    .hint {
+      border: 1px dashed var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-top: 14px;
+      background: white;
+    }
+    .badge {
+      display: inline-block;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .badge.ok { background: var(--ok-bg); color: var(--ok-text); }
+    .badge.danger { background: var(--danger-bg); color: var(--danger); }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: white;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 1400px;
+      background: white;
+    }
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px;
+      text-align: left;
+      font-size: 14px;
+      vertical-align: top;
+    }
+    th {
+      background: #f1f5f9;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .danger-link {
+      color: var(--danger);
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-weight: 700;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .msg {
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--danger);
+      white-space: pre-wrap;
+    }
+    .okmsg { color: var(--ok-text); }
+    @media (max-width: 900px) {
+      .stats, .grid-2, .preview-grid { grid-template-columns: 1fr; }
+      .mini-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
-  <div id="app">로딩중...</div>
+  <div id="root">로딩중...</div>
 
   <script>
     const SUPABASE_URL = "https://wjxyspuieuzfhfosmpin.supabase.co";
     const SUPABASE_KEY = "sb_publishable_efMuks4GrwR3WJ8k3ZOK_g_znTfJL1j";
-    const app = document.getElementById("app");
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    function show(msg) {
-      app.innerHTML = msg;
+    const CM_LIMIT = 154;
+    const M3_LIMIT = 7;
+
+    let currentUser = null;
+    let rawRows = [];
+
+    function round2(n) {
+      return Math.round((Number(n) + Number.EPSILON) * 100) / 100;
     }
 
-    function showError(title, err) {
-      const text = err?.message || err || "알 수 없는 오류";
-      app.innerHTML = `
-        <h2>오류</h2>
-        <div class="err"><b>${title}</b><br>${text}</div>
+    function cmToM3(cm) {
+      return round2((Number(cm) * M3_LIMIT) / CM_LIMIT);
+    }
+
+    function m3ToCm(m3) {
+      return round2((Number(m3) * CM_LIMIT) / M3_LIMIT);
+    }
+
+    function getTodayGuidelineText(combinedLevelCm) {
+      return combinedLevelCm > CM_LIMIT ? `OVER ${CM_LIMIT}` : `${cmToM3(combinedLevelCm).toFixed(2)}`;
+    }
+
+    function normalizeNotes(baseNotes, hasExternalStorage, externalTon, externalCm) {
+      const trimmed = (baseNotes || '').trim();
+      if (!hasExternalStorage || !externalTon) return trimmed;
+      const auto = `${externalTon}T 외부보관 (${round2(externalCm).toFixed(1)}cm)`;
+      return trimmed ? `${auto}, ${trimmed}` : auto;
+    }
+
+    function enrichRows(rows) {
+      const sorted = [...rows].sort((a, b) => a.date.localeCompare(b.date));
+      let prevGuidelineM3 = 0;
+
+      return sorted.map((row, index) => {
+        const externalCm = row.hasExternalStorage ? Number(row.externalCm || m3ToCm(row.externalTon || 0)) : 0;
+        const combinedLevelCm = round2(Number(row.height || 0) + externalCm);
+        const combinedLevelOver = combinedLevelCm > CM_LIMIT;
+        const todayGuidelineM3 = combinedLevelOver ? null : cmToM3(combinedLevelCm);
+        const todayGuidelineText = getTodayGuidelineText(combinedLevelCm);
+        const generatedM3 = combinedLevelOver ? null : round2(todayGuidelineM3 - prevGuidelineM3);
+        const generatedText = combinedLevelOver ? 'Unverified' : generatedM3.toFixed(2);
+
+        const waterPrev = index === 0 ? 0 : Number(sorted[index - 1].usage || 0);
+        const waterToday = Number(row.usage || 0);
+        const waterUsageM3 = index === 0 ? waterToday : round2(waterToday - waterPrev);
+
+        const levelDisplay = row.afterPickupLevelCm != null && row.afterPickupLevelCm !== ''
+          ? `${combinedLevelOver ? `OVER ${CM_LIMIT}` : Number(row.height).toFixed(1)}(${Number(row.afterPickupLevelCm).toFixed(1)})`
+          : `${combinedLevelOver ? `OVER ${CM_LIMIT}` : Number(row.height).toFixed(1)}`;
+
+        const result = {
+          ...row,
+          externalCm,
+          combinedLevelCm,
+          combinedLevelOver,
+          prevGuidelineM3,
+          todayGuidelineM3,
+          todayGuidelineText,
+          generatedM3,
+          generatedText,
+          waterPrev,
+          waterToday,
+          waterUsageM3,
+          levelDisplay,
+          normalizedNotes: normalizeNotes(row.note, row.hasExternalStorage, row.externalTon, externalCm)
+        };
+
+        prevGuidelineM3 = row.afterPickupLevelCm != null && row.afterPickupLevelCm !== ''
+          ? cmToM3(row.afterPickupLevelCm)
+          : (todayGuidelineM3 ?? prevGuidelineM3);
+
+        return result;
+      });
+    }
+
+    function renderLogin(message = '') {
+      document.getElementById('root').innerHTML = `
+        <div class="auth-box">
+          <h2>로그인</h2>
+          <div class="field">
+            <label>이메일</label>
+            <input id="email" type="email" placeholder="이메일">
+          </div>
+          <div class="field">
+            <label>비밀번호</label>
+            <input id="password" type="password" placeholder="비밀번호">
+          </div>
+          <div class="row">
+            <button class="btn secondary" onclick="login()">로그인</button>
+            <button class="btn secondary" onclick="signup()">회원가입</button>
+          </div>
+          ${message ? `<div class="msg">${message}</div>` : ''}
+        </div>
       `;
     }
 
-    function showLogin() {
-      app.innerHTML = `
-        <h2>로그인</h2>
-        <input id="email" type="email" placeholder="이메일" />
-        <input id="password" type="password" placeholder="비밀번호" />
-        <button onclick="login()">로그인</button>
-        <button onclick="signup()">회원가입</button>
+    function renderAppShell() {
+      document.getElementById('root').innerHTML = `
+        <div class="wrap">
+          <div class="topbar">
+            <div>
+              <h1>폐수배출시설 운영일지</h1>
+              <div class="sub">모바일 입력 + 수거 등록 + 운영일지 조회</div>
+            </div>
+            <div class="row">
+              <div>${currentUser?.email || ''}</div>
+              <button class="btn secondary" onclick="logout()">로그아웃</button>
+            </div>
+          </div>
+
+          <div class="stats">
+            <div class="card"><div class="label">누적 당일 용수사용량</div><div class="value" id="statWater">0.00 m³</div></div>
+            <div class="card"><div class="label">누적 위탁량</div><div class="value" id="statEntrusted">0.00 m³</div></div>
+            <div class="card"><div class="label">초과 발생 일수</div><div class="value" id="statOver">0일</div></div>
+            <div class="card"><div class="label">최근 상태</div><div class="value" id="statStatus"><span class="badge ok">정상</span></div></div>
+          </div>
+
+          <div class="tabs">
+            <button class="tab-btn active" data-tab="daily">일일 입력</button>
+            <button class="tab-btn" data-tab="pickup">수거 등록</button>
+            <button class="tab-btn" data-tab="ledger">운영일지</button>
+          </div>
+
+          <div id="daily" class="tab active">
+            <div class="grid-2">
+              <div class="card">
+                <div class="field"><label>날짜 (A)</label><input type="date" id="date"></div>
+                <div class="field"><label>용수 금일 지침 (G, 계량기 누적값 m³)</label><input type="number" step="0.01" id="waterMeter"></div>
+                <div class="field"><label>폐수높이 (Q, cm)</label><input type="number" step="0.1" id="tankLevel"></div>
+                <div class="field"><label>기타사항 (P)</label><textarea id="notes" placeholder="예: 교반기 점검"></textarea></div>
+
+                <div class="card" style="padding:14px; margin-bottom:14px;">
+                  <div class="row" style="margin-bottom:10px;">
+                    <input type="checkbox" id="hasExternal" style="width:auto;">
+                    <label for="hasExternal" style="margin:0;">외부보관 있음</label>
+                  </div>
+                  <div class="mini-grid" id="externalBox" style="display:none;">
+                    <div class="field"><label>외부보관량 (T)</label><input type="number" step="0.1" id="externalTon" value="1"></div>
+                    <div class="field"><label>환산높이 (cm)</label><input type="number" step="0.1" id="externalCm" value="22"></div>
+                  </div>
+                </div>
+
+                <button class="btn" id="saveDailyBtn">저장 / 수정</button>
+                <div class="msg" id="saveMsg"></div>
+              </div>
+
+              <div class="card">
+                <div class="preview-grid">
+                  <div class="smallbox"><div class="label">용수 전일 지침</div><div class="value" id="previewWaterPrev">0.00 m³</div></div>
+                  <div class="smallbox"><div class="label">용수 금일 지침</div><div class="value" id="previewWaterToday">-</div></div>
+                  <div class="smallbox"><div class="label">당일 용수사용량</div><div class="value" id="previewWaterUsage">-</div></div>
+                  <div class="smallbox"><div class="label">외부보관 높이</div><div class="value" id="previewExternal">0.0 cm</div></div>
+                  <div class="smallbox"><div class="label">계산용 총높이</div><div class="value" id="previewCombined">-</div></div>
+                  <div class="smallbox"><div class="label">금일지침</div><div class="value" id="previewTodayGuideline">-</div></div>
+                  <div class="smallbox"><div class="label">총 발생량</div><div class="value" id="previewGenerated">-</div></div>
+                </div>
+                <div class="hint">
+                  G열은 당일 사용량이 아니라 <b>계량기 누적값</b>을 입력합니다.<br>
+                  당일 용수사용량은 <b>금일 지침 - 전일 지침</b>으로 자동 계산됩니다.<br>
+                  기준: <b>154cm = 7m³</b>, <b>22cm ≒ 1T</b><br>
+                  계산용 총높이 = 저장고 높이 + 외부보관 환산높이<br>
+                  계산용 총높이가 154 초과면 금일지침은 <b>OVER 154</b>, 총 발생량은 <b>Unverified</b>로 표시됩니다.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="pickup" class="tab">
+            <div class="grid-2">
+              <div class="card">
+                <div class="field"><label>수거일</label><input type="date" id="pickupDate"></div>
+                <div class="field"><label>위탁량 (L, m³)</label><input type="number" step="0.01" id="pickupAmount"></div>
+                <div class="field"><label>확인서 일련번호 (M)</label><input type="text" id="pickupCert"></div>
+                <div class="field"><label>처리업소 (N)</label><input type="text" id="pickupContractor"></div>
+                <div class="field"><label>수거 후 높이 (괄호값, cm)</label><input type="number" step="0.1" id="pickupAfter"></div>
+                <button class="btn secondary" onclick="alert('수거 등록은 다음 단계에서 DB 컬럼 확장 후 연결합니다.')">수거 내역 저장</button>
+              </div>
+              <div class="card">
+                <div class="hint">
+                  현재는 일일 입력 DB 저장까지 연결된 상태입니다.<br>
+                  수거 등록/관리자 기능은 다음 단계에서 컬럼과 테이블을 확장해 연결합니다.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="ledger" class="tab">
+            <div class="toolbar">
+              <div class="row">
+                <button class="btn secondary" onclick="downloadCsv()">CSV 다운로드</button>
+                <button class="btn secondary" onclick="loadRows()">새로고침</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>날짜</th>
+                    <th>용수 전일</th>
+                    <th>용수 금일</th>
+                    <th>용수사용량</th>
+                    <th>저장고 높이</th>
+                    <th>외부보관</th>
+                    <th>계산용 총높이</th>
+                    <th>전일지침</th>
+                    <th>금일지침</th>
+                    <th>총 발생량</th>
+                    <th>위탁량</th>
+                    <th>확인서번호</th>
+                    <th>처리업소</th>
+                    <th>표시 높이</th>
+                    <th>기타</th>
+                  </tr>
+                </thead>
+                <tbody id="ledgerBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       `;
+
+      bindAppEvents();
+      renderAll();
     }
 
-    function showApp(user) {
-      app.innerHTML = `
-        <h2>폐수 관리 앱</h2>
-        <p>${user.email}</p>
-        <button onclick="logout()">로그아웃</button>
-      `;
+    function bindAppEvents() {
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+          btn.classList.add('active');
+          document.getElementById(btn.dataset.tab).classList.add('active');
+        });
+      });
+
+      ['date', 'waterMeter', 'tankLevel', 'externalTon', 'externalCm'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', updatePreview);
+      });
+
+      const hasExternal = document.getElementById('hasExternal');
+      if (hasExternal) hasExternal.addEventListener('change', updatePreview);
+
+      const saveBtn = document.getElementById('saveDailyBtn');
+      if (saveBtn) saveBtn.addEventListener('click', saveDaily);
     }
 
-    let supabase = null;
+    function renderStats(rows) {
+      const totalWaterUsage = rows.reduce((sum, r) => sum + Number(r.waterUsageM3 || 0), 0);
+      const totalEntrusted = rows.reduce((sum, r) => sum + Number(r.entrustedAmountM3 || 0), 0);
+      const overCount = rows.filter((r) => r.combinedLevelOver).length;
+      const latest = rows[rows.length - 1];
 
-    async function init() {
-      try {
-        if (!window.supabase || !window.supabase.createClient) {
-          throw new Error("Supabase 라이브러리 로드 실패");
-        }
+      document.getElementById('statWater').textContent = `${totalWaterUsage.toFixed(2)} m³`;
+      document.getElementById('statEntrusted').textContent = `${totalEntrusted.toFixed(2)} m³`;
+      document.getElementById('statOver').textContent = `${overCount}일`;
+      document.getElementById('statStatus').innerHTML = latest?.combinedLevelOver
+        ? '<span class="badge danger">OVER 154</span>'
+        : '<span class="badge ok">정상</span>';
+    }
 
-        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    function renderLedger(rows) {
+      const tbody = document.getElementById('ledgerBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
 
-        const { data, error } = await supabase.auth.getSession();
+      rows.forEach((row) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${row.date}</td>
+          <td>${Number(row.waterPrev).toFixed(2)}</td>
+          <td>${Number(row.waterToday).toFixed(2)}</td>
+          <td>${Number(row.waterUsageM3).toFixed(2)}</td>
+          <td>${Number(row.height).toFixed(1)} cm</td>
+          <td>${row.hasExternalStorage ? `${row.externalTon}T (${Number(row.externalCm).toFixed(1)}cm)` : '-'}</td>
+          <td>${Number(row.combinedLevelCm).toFixed(1)} cm ${row.combinedLevelOver ? '<span class="badge danger">OVER 154</span>' : ''}</td>
+          <td>${Number(row.prevGuidelineM3).toFixed(2)}</td>
+          <td>${row.todayGuidelineText}${String(row.todayGuidelineText).startsWith('OVER') ? '' : ' m³'}</td>
+          <td>${row.generatedText}${row.generatedText === 'Unverified' ? '' : ' m³'}</td>
+          <td>${row.entrustedAmountM3 ? Number(row.entrustedAmountM3).toFixed(2) : '-'}</td>
+          <td>${row.certificateNo || '-'}</td>
+          <td>${row.contractor || '-'}</td>
+          <td>${row.levelDisplay}</td>
+          <td>${row.normalizedNotes || '-'}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
 
-        if (error) {
-          showLogin();
-          return;
-        }
+    function renderAll() {
+      const rows = enrichRows(rawRows);
+      renderStats(rows);
+      renderLedger(rows);
+      updatePreview();
+    }
 
-        if (data && data.session && data.session.user) {
-          showApp(data.session.user);
-        } else {
-          showLogin();
-        }
-      } catch (err) {
-        showError("초기화 실패", err);
+    function updatePreview() {
+      const rows = enrichRows(rawRows);
+      const latest = rows[rows.length - 1];
+      const hasExternal = document.getElementById('hasExternal')?.checked || false;
+
+      const externalBox = document.getElementById('externalBox');
+      if (externalBox) externalBox.style.display = hasExternal ? 'grid' : 'none';
+
+      const previewPrevWater = latest ? Number(latest.waterToday || 0) : 0;
+      const waterMeter = document.getElementById('waterMeter')?.value || '';
+      const tankLevel = document.getElementById('tankLevel')?.value || '';
+      const externalTon = document.getElementById('externalTon')?.value || 0;
+      const externalCm = hasExternal ? Number(document.getElementById('externalCm')?.value || m3ToCm(externalTon)) : 0;
+
+      document.getElementById('previewWaterPrev').textContent = `${previewPrevWater.toFixed(2)} m³`;
+      document.getElementById('previewWaterToday').textContent = waterMeter ? `${Number(waterMeter).toFixed(2)} m³` : '-';
+      document.getElementById('previewWaterUsage').textContent = waterMeter ? `${round2(Number(waterMeter) - previewPrevWater).toFixed(2)} m³` : '-';
+      document.getElementById('previewExternal').textContent = `${externalCm.toFixed(1)} cm`;
+
+      if (!tankLevel) {
+        document.getElementById('previewCombined').textContent = '-';
+        document.getElementById('previewTodayGuideline').textContent = '-';
+        document.getElementById('previewGenerated').textContent = '-';
+        return;
       }
+
+      const combined = round2(Number(tankLevel) + externalCm);
+      document.getElementById('previewCombined').textContent = `${combined.toFixed(1)} cm`;
+      document.getElementById('previewTodayGuideline').textContent = getTodayGuidelineText(combined) + (combined > CM_LIMIT ? '' : ' m³');
+
+      const prevGuideline = latest
+        ? (latest.afterPickupLevelCm != null ? cmToM3(latest.afterPickupLevelCm) : (latest.todayGuidelineM3 ?? latest.prevGuidelineM3))
+        : 0;
+
+      document.getElementById('previewGenerated').textContent =
+        combined > CM_LIMIT ? 'Unverified' : `${round2(cmToM3(combined) - prevGuideline).toFixed(2)} m³`;
+    }
+
+    async function loadRows() {
+      const { data, error } = await supabase
+        .from('wastewater')
+        .select('*')
+        .order('date', { ascending: true });
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      rawRows = (data || []).map(row => ({
+        ...row,
+        hasExternalStorage: false,
+        externalTon: 0,
+        externalCm: 0,
+        entrustedAmountM3: 0,
+        certificateNo: '',
+        contractor: '',
+        afterPickupLevelCm: null
+      }));
+
+      renderAll();
+    }
+
+    async function saveDaily() {
+      const msg = document.getElementById('saveMsg');
+      msg.textContent = '';
+
+      const date = document.getElementById('date').value;
+      const usage = document.getElementById('waterMeter').value;
+      const height = document.getElementById('tankLevel').value;
+      const note = document.getElementById('notes').value;
+
+      if (!date || usage === '' || height === '') {
+        msg.textContent = '날짜, 용수 금일 지침, 폐수높이는 입력해야 합니다.';
+        return;
+      }
+
+      const { error } = await supabase
+        .from('wastewater')
+        .insert([{
+          date,
+          usage: parseFloat(usage),
+          height: parseFloat(height),
+          note
+        }]);
+
+      if (error) {
+        msg.textContent = '저장 실패: ' + error.message;
+        return;
+      }
+
+      msg.textContent = '저장 완료';
+      msg.classList.add('okmsg');
+
+      document.getElementById('date').value = '';
+      document.getElementById('waterMeter').value = '';
+      document.getElementById('tankLevel').value = '';
+      document.getElementById('notes').value = '';
+      document.getElementById('hasExternal').checked = false;
+      document.getElementById('externalBox').style.display = 'none';
+
+      await loadRows();
     }
 
     async function login() {
-      try {
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
 
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password
-        });
-
-        if (error) throw error;
-        location.reload();
-      } catch (err) {
-        showError("로그인 실패", err);
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        renderLogin(error.message);
+      } else {
+        await init();
       }
     }
 
     async function signup() {
-      try {
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
 
-        const { error } = await supabase.auth.signUp({
-          email,
-          password
-        });
-
-        if (error) throw error;
-        alert("회원가입 완료. 이메일 확인 후 로그인하세요.");
-      } catch (err) {
-        showError("회원가입 실패", err);
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) {
+        renderLogin(error.message);
+      } else {
+        renderLogin('회원가입 완료. 이메일 확인 후 로그인해 주세요.');
       }
     }
 
     async function logout() {
-      try {
-        const { error } = await supabase.auth.signOut();
-        if (error) throw error;
-        location.reload();
-      } catch (err) {
-        showError("로그아웃 실패", err);
+      await supabase.auth.signOut();
+      currentUser = null;
+      renderLogin();
+    }
+
+    function downloadCsv() {
+      const rows = enrichRows(rawRows);
+      const headers = ['날짜','용수전일지침(m3)','용수금일지침(m3)','당일용수사용량(m3)','저장고높이(cm)','외부보관(T)','외부보관(cm)','계산용총높이(cm)','전일지침(m3)','금일지침','총발생량','위탁량(m3)','확인서번호','처리업소','수거후높이(cm)','기타'];
+      const csvRows = rows.map(r => [
+        r.date, r.waterPrev, r.waterToday, r.waterUsageM3, r.height, r.externalTon, r.externalCm,
+        r.combinedLevelCm, Number(r.prevGuidelineM3).toFixed(2), r.todayGuidelineText, r.generatedText,
+        r.entrustedAmountM3 || '', r.certificateNo || '', r.contractor || '', r.afterPickupLevelCm ?? '', (r.normalizedNotes || '').replaceAll(',', ' / ')
+      ]);
+      const csv = [headers, ...csvRows]
+        .map(row => row.map(v => `"${String(v ?? '').replaceAll('"','""')}"`).join(','))
+        .join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = '폐수운영일지.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function init() {
+      const { data, error } = await supabase.auth.getSession();
+
+      if (error) {
+        renderLogin(error.message);
+        return;
+      }
+
+      if (data && data.session && data.session.user) {
+        currentUser = data.session.user;
+        renderAppShell();
+        await loadRows();
+      } else {
+        renderLogin();
       }
     }
 
     window.login = login;
     window.signup = signup;
     window.logout = logout;
+    window.downloadCsv = downloadCsv;
 
     init();
   </script>
