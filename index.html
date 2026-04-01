@@ -520,7 +520,7 @@ function getDerivedStats() {
     }
 
     prevMeter = meter;
-    prevGuideline = pickup?.after_pickup_cm ? cmToM3(Number(pickup.after_pickup_cm)) : (guidelineValue ?? prevGuideline);
+    prevGuideline = pickup?.after_pickup_cm != null ? cmToM3(Number(pickup.after_pickup_cm)) : (guidelineValue ?? prevGuideline);
 
     return {
       ...row,
@@ -841,7 +841,7 @@ function updateDailyPreview() {
   const waterUsed = meter ? round2(meter - latestMeter) : null;
   const guideline = meter || height ? getTodayGuidelineText(totalCm) : '-';
   const latest = getDerivedStats().latest;
-  const prevGuideline = latest?.pickup?.after_pickup_cm ? cmToM3(Number(latest.pickup.after_pickup_cm)) : (latest ? (latest.total_cm > CM_LIMIT ? 0 : cmToM3(latest.total_cm)) : 0);
+  const prevGuideline = latest?.pickup?.after_pickup_cm != null ? cmToM3(Number(latest.pickup.after_pickup_cm)) : (latest ? (latest.total_cm > CM_LIMIT ? 0 : cmToM3(latest.total_cm)) : 0);
   const generated = (meter || height) ? (totalCm > CM_LIMIT ? 'Unverified' : `${formatNum(round2(cmToM3(totalCm) - prevGuideline), 2)} m³`) : '-';
 
   setText('pv-water-prev', `${formatNum(latestMeter, 2)} m³`);
