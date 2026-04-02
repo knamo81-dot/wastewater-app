@@ -32,24 +32,29 @@
     }
 
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
     }
+
     button, input, textarea, select { font: inherit; }
+
     .app-shell {
       max-width: 1540px;
       margin: 0 auto;
       padding: 18px;
     }
+
     .card {
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
     }
+
     .topbar {
       display: flex;
       justify-content: space-between;
@@ -57,6 +62,7 @@
       gap: 16px;
       margin-bottom: 18px;
     }
+
     .title-wrap h1 {
       margin: 0;
       font-size: 32px;
@@ -64,11 +70,13 @@
       font-weight: 800;
       letter-spacing: -0.02em;
     }
+
     .title-wrap .sub {
       margin-top: 8px;
       color: var(--muted);
       font-size: 15px;
     }
+
     .top-actions {
       display: flex;
       gap: 10px;
@@ -76,6 +84,7 @@
       justify-content: flex-end;
       align-items: center;
     }
+
     .status-pill {
       display: inline-flex;
       align-items: center;
@@ -85,8 +94,10 @@
       font-size: 13px;
       font-weight: 700;
     }
+
     .status-pill.danger { background: var(--danger); color: #fff; }
     .status-pill.ok { background: var(--ok-soft); color: var(--ok); }
+
     .btn {
       border: 1px solid var(--line);
       background: #fff;
@@ -97,6 +108,7 @@
       font-weight: 700;
       transition: transform 0.15s ease, background 0.15s ease;
     }
+
     .btn:hover { transform: translateY(-1px); }
     .btn.primary { background: var(--navy); color: #fff; border-color: var(--navy); }
     .btn.soft { background: #fff; }
@@ -109,16 +121,19 @@
       gap: 14px;
       margin-bottom: 18px;
     }
+
     .stat-box {
       padding: 22px;
       min-height: 108px;
     }
+
     .stat-label {
       color: var(--muted);
       font-size: 14px;
       margin-bottom: 10px;
       font-weight: 700;
     }
+
     .stat-value {
       font-size: 24px;
       font-weight: 800;
@@ -131,6 +146,7 @@
       gap: 12px;
       margin-bottom: 18px;
     }
+
     .tab-btn {
       border: 1px solid var(--line);
       background: var(--soft);
@@ -141,11 +157,13 @@
       color: var(--muted);
       cursor: pointer;
     }
+
     .tab-btn.active {
       background: #fff;
       color: var(--navy);
       box-shadow: var(--shadow);
     }
+
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
@@ -170,12 +188,14 @@
     }
 
     .field { margin-bottom: 16px; }
+
     .field label {
       display: block;
       margin-bottom: 8px;
       font-weight: 700;
       color: var(--navy);
     }
+
     .input, .textarea, .select {
       width: 100%;
       border: 1px solid var(--line);
@@ -184,6 +204,7 @@
       padding: 14px 15px;
       color: var(--text);
     }
+
     .textarea { min-height: 94px; resize: vertical; }
 
     .checkbox-row {
@@ -196,9 +217,14 @@
       background: #fff;
       margin-bottom: 14px;
     }
+
     .checkbox-row input { width: auto; margin: 0; }
 
-    .actions-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .actions-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
     .preview-grid {
       display: grid;
@@ -206,6 +232,7 @@
       gap: 14px;
       margin-bottom: 18px;
     }
+
     .mini-card {
       border: 1px solid var(--line);
       border-radius: 18px;
@@ -213,12 +240,14 @@
       background: #fff;
       min-height: 92px;
     }
+
     .mini-label {
       color: var(--muted);
       font-size: 14px;
       font-weight: 700;
       margin-bottom: 10px;
     }
+
     .mini-value {
       font-weight: 800;
       font-size: 18px;
@@ -239,6 +268,7 @@
       gap: 10px;
       margin-bottom: 14px;
     }
+
     .type-chip {
       border: 1px solid var(--line);
       background: #fff;
@@ -249,11 +279,13 @@
       cursor: pointer;
       color: var(--muted);
     }
+
     .type-chip.active.wastewater {
       background: var(--indigo-soft);
       color: var(--indigo-text);
       border-color: #c7d2fe;
     }
+
     .type-chip.active.waste {
       background: var(--green-soft);
       color: var(--green-text);
@@ -265,14 +297,17 @@
       padding: 16px;
       margin-bottom: 16px;
     }
+
     .type-box.wastewater {
       border: 1px solid #dbeafe;
       background: #f5faff;
     }
+
     .type-box.waste {
       border: 1px solid #d1fadf;
       background: #f3fff7;
     }
+
     .type-box-title {
       font-size: 14px;
       font-weight: 800;
@@ -289,10 +324,12 @@
       font-weight: 800;
       white-space: nowrap;
     }
+
     .inline-badge.wastewater {
       background: var(--sky-soft);
       color: var(--sky-text);
     }
+
     .inline-badge.waste {
       background: var(--amber-soft);
       color: var(--amber-text);
@@ -304,6 +341,7 @@
       font-size: 14px;
       font-weight: 700;
     }
+
     .msg.err { color: #b42318; }
     .msg.ok { color: var(--ok); }
     .msg.muted { color: var(--muted); font-weight: 500; }
@@ -314,12 +352,14 @@
       border-radius: 18px;
       background: #fff;
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       min-width: 1080px;
       background: #fff;
     }
+
     th, td {
       border-bottom: 1px solid var(--line);
       padding: 12px 12px;
@@ -327,6 +367,7 @@
       vertical-align: top;
       font-size: 14px;
     }
+
     th {
       background: #f5f8fc;
       color: var(--navy);
@@ -343,6 +384,7 @@
       cursor: pointer;
       font-weight: 700;
     }
+
     .small-btn.danger { color: #b42318; border-color: #f5c0bb; }
     .small-btn.primary { color: #0e1a38; }
 
@@ -352,18 +394,29 @@
       gap: 18px;
     }
 
+    .three-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+
     .login-wrap {
       min-height: 100vh;
       display: grid;
       place-items: center;
       padding: 20px;
     }
+
     .login-card {
       width: 100%;
       max-width: 430px;
       padding: 28px;
     }
-    .login-card h2 { margin-top: 0; font-size: 28px; }
+
+    .login-card h2 {
+      margin-top: 0;
+      font-size: 28px;
+    }
 
     .role-badge {
       display: inline-flex;
@@ -377,6 +430,7 @@
       color: #2443a7;
       text-transform: uppercase;
     }
+
     .role-badge.admin { background: #fff1f0; color: #b42318; }
     .role-badge.operator { background: #eef7ff; color: #175cd3; }
     .role-badge.user { background: #f2f4f7; color: #344054; }
@@ -389,6 +443,7 @@
       flex-wrap: wrap;
       margin-bottom: 16px;
     }
+
     .toolbar-right {
       display: flex;
       gap: 10px;
@@ -401,7 +456,9 @@
       .main-grid { grid-template-columns: 1fr; }
       .preview-grid { grid-template-columns: repeat(2, 1fr); }
       .two-col { grid-template-columns: 1fr; }
+      .three-col { grid-template-columns: 1fr; }
     }
+
     @media (max-width: 720px) {
       .app-shell { padding: 12px; }
       .topbar { flex-direction: column; align-items: stretch; }
@@ -439,6 +496,7 @@ let currentTab = 'daily';
 let ledgerMonthFilter = '';
 let pickupYearFilter = '';
 let pickupTypeFilter = '전체';
+let yearlyReportFilter = '';
 let dailyRows = [];
 let pickupRows = [];
 let userRows = [];
@@ -452,23 +510,51 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
-function round2(v) { return Math.round((Number(v || 0) + Number.EPSILON) * 100) / 100; }
-function cmToM3(cm) { return round2((Number(cm || 0) / CM_LIMIT) * MAX_TON_M3); }
+
+function round2(v) {
+  return Math.round((Number(v || 0) + Number.EPSILON) * 100) / 100;
+}
+
+function cmToM3(cm) {
+  return round2((Number(cm || 0) / CM_LIMIT) * MAX_TON_M3);
+}
+
 function formatNum(v, digits = 2) {
   if (v === null || v === undefined || v === '' || Number.isNaN(Number(v))) return '-';
   return Number(v).toFixed(digits);
 }
+
 function roleBadge(role) {
   return `<span class="role-badge ${role}">${role}</span>`;
 }
+
 function getTodayGuidelineText(totalCm) {
   return totalCm > CM_LIMIT ? `OVER ${CM_LIMIT}` : `${formatNum(cmToM3(totalCm), 2)} m³`;
 }
-function canWrite() { return currentRole === 'admin' || currentRole === 'operator'; }
-function canDelete() { return currentRole === 'admin' || currentRole === 'operator'; }
-function canAdmin() { return currentRole === 'admin'; }
-function monthKeyFromDate(v) { return String(v || '').slice(0, 7); }
-function yearKeyFromDate(v) { return String(v || '').slice(0, 4); }
+
+function canWrite() {
+  return currentRole === 'admin' || currentRole === 'operator';
+}
+
+function canDelete() {
+  return currentRole === 'admin' || currentRole === 'operator';
+}
+
+function canAdmin() {
+  return currentRole === 'admin';
+}
+
+function canDownload() {
+  return currentRole === 'admin' || currentRole === 'operator';
+}
+
+function monthKeyFromDate(v) {
+  return String(v || '').slice(0, 7);
+}
+
+function yearKeyFromDate(v) {
+  return String(v || '').slice(0, 4);
+}
 
 function getDefaultLedgerMonth() {
   const sourceDate = dailyRows.length ? dailyRows[0].date : new Date().toISOString().slice(0, 10);
@@ -477,9 +563,7 @@ function getDefaultLedgerMonth() {
 
 function getPickupYears() {
   const years = [...new Set(
-    pickupRows
-      .map(r => yearKeyFromDate(r.pickup_date))
-      .filter(Boolean)
+    pickupRows.map(r => yearKeyFromDate(r.pickup_date)).filter(Boolean)
   )].sort((a, b) => Number(b) - Number(a));
 
   const currentYear = String(new Date().getFullYear());
@@ -490,6 +574,51 @@ function getPickupYears() {
 function getDefaultPickupYear() {
   const years = getPickupYears();
   return years[0] || String(new Date().getFullYear());
+}
+
+function getAvailableYears() {
+  const years = [...new Set([
+    ...dailyRows.map(r => yearKeyFromDate(r.date)).filter(Boolean),
+    ...pickupRows.map(r => yearKeyFromDate(r.pickup_date)).filter(Boolean)
+  ])].sort((a, b) => Number(b) - Number(a));
+
+  const currentYear = String(new Date().getFullYear());
+  if (!years.includes(currentYear)) years.unshift(currentYear);
+  return years;
+}
+
+function getDefaultYearlyReportYear() {
+  const years = getAvailableYears();
+  return years[0] || String(new Date().getFullYear());
+}
+
+function formatMonthLabel(monthKey) {
+  if (!monthKey || monthKey.length < 7) return monthKey || '-';
+  return `${monthKey.slice(0, 4)}년 ${Number(monthKey.slice(5, 7))}월`;
+}
+
+function getMonthRangeText(monthKey) {
+  return `${formatMonthLabel(monthKey)} 기준`;
+}
+
+function safeNumber(v) {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function summarizeWasteCounts(rows) {
+  return rows.reduce((acc, row) => {
+    acc.alkali += safeNumber(row.waste_alkali_count);
+    acc.acid += safeNumber(row.waste_acid_count);
+    acc.organicSolid += safeNumber(row.waste_organic_solid_count);
+    acc.organicBottle += safeNumber(row.waste_organic_bottle_count);
+    return acc;
+  }, {
+    alkali: 0,
+    acid: 0,
+    organicSolid: 0,
+    organicBottle: 0
+  });
 }
 
 function downloadFile(filename, content, mime) {
@@ -593,8 +722,11 @@ async function loadAll(message = '', cls = 'muted') {
 
   dailyRows = dailyRes.data || [];
   pickupRows = pickupRes.data || [];
+
   if (!ledgerMonthFilter) ledgerMonthFilter = getDefaultLedgerMonth();
   if (!pickupYearFilter) pickupYearFilter = getDefaultPickupYear();
+  if (!yearlyReportFilter) yearlyReportFilter = getDefaultYearlyReportYear();
+
   userRows = usersRes.data || [];
   logRows = logsRes.data || [];
   renderApp(message, cls);
@@ -621,7 +753,10 @@ function getDerivedStats() {
     const waterUsed = idx === 0 ? meter : round2(meter - prevMeter);
     totalWaterUse += Math.max(waterUsed, 0);
 
-    const externalCm = row.has_external ? Number(row.external_cm || (Number(row.external_ton || 0) * TON_TO_CM)) : 0;
+    const externalCm = row.has_external
+      ? Number(row.external_cm || (Number(row.external_ton || 0) * TON_TO_CM))
+      : 0;
+
     const totalCm = round2(Number(row.height || 0) + externalCm);
     const guidelineText = getTodayGuidelineText(totalCm);
     const guidelineValue = totalCm > CM_LIMIT ? null : cmToM3(totalCm);
@@ -670,7 +805,7 @@ function getDerivedStats() {
 }
 
 function getPickupTypeBadge(type) {
-  const normalized = (type || '폐수');
+  const normalized = type || '폐수';
   if (normalized === '폐기물') {
     return `<span class="inline-badge waste">폐기물</span>`;
   }
@@ -687,9 +822,178 @@ function getPickupDetailText(row) {
       `폐시약병 ${Number(row.waste_organic_bottle_count || 0)}`
     ].join(' / ');
   }
-  return `위탁량 ${formatNum(row.entrusted_amount, 2)}m³ / 수거후높이 ${formatNum(row.after_pickup_cm, 1)}cm`;
+  return `위탁량 ${formatNum(row.entrusted_amount, 2)}m³ / 수거후높이 ${String(row.after_pickup_cm ?? '-') }cm`;
 }
-function renderPickupRows(rows) {
+
+function getMonthlyReportData(monthKey) {
+  const stats = getDerivedStats();
+
+  const ledgerRows = [...stats.enrichedDaily]
+    .filter(r => monthKeyFromDate(r.date) === monthKey)
+    .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+
+  const pickupMonthRows = [...pickupRows]
+    .filter(r => monthKeyFromDate(r.pickup_date) === monthKey)
+    .sort((a, b) => String(a.pickup_date).localeCompare(String(b.pickup_date)));
+
+  const wastewaterRows = pickupMonthRows.filter(r => (r.pickup_type || '폐수') === '폐수');
+  const wasteRows = pickupMonthRows.filter(r => (r.pickup_type || '폐수') === '폐기물');
+
+  const totalWaterUse = round2(ledgerRows.reduce((sum, r) => sum + safeNumber(r.water_used), 0));
+  const totalEntrusted = round2(wastewaterRows.reduce((sum, r) => sum + safeNumber(r.entrusted_amount), 0));
+  const overRows = ledgerRows.filter(r => safeNumber(r.total_cm) > CM_LIMIT);
+  const maxHeight = ledgerRows.length ? Math.max(...ledgerRows.map(r => safeNumber(r.total_cm))) : 0;
+  const externalCount = ledgerRows.filter(r => !!r.has_external).length;
+  const wasteCounts = summarizeWasteCounts(wasteRows);
+
+  return {
+    monthKey,
+    monthLabel: formatMonthLabel(monthKey),
+    ledgerRows,
+    pickupMonthRows,
+    wastewaterRows,
+    wasteRows,
+    totalWaterUse,
+    totalEntrusted,
+    overRows,
+    overCount: overRows.length,
+    maxHeight,
+    externalCount,
+    wasteCounts,
+    wastewaterPickupCount: wastewaterRows.length,
+    wastePickupCount: wasteRows.length
+  };
+}
+
+function getYearlyReportData(year) {
+  const stats = getDerivedStats();
+  const yearLedgerRows = stats.enrichedDaily.filter(r => yearKeyFromDate(r.date) === year);
+  const yearPickupRows = pickupRows.filter(r => yearKeyFromDate(r.pickup_date) === year);
+
+  const monthlyMap = {};
+  for (let m = 1; m <= 12; m++) {
+    const mm = String(m).padStart(2, '0');
+    monthlyMap[`${year}-${mm}`] = {
+      monthKey: `${year}-${mm}`,
+      label: `${m}월`,
+      waterUse: 0,
+      entrusted: 0,
+      overCount: 0,
+      wasteAlkali: 0,
+      wasteAcid: 0,
+      wasteOrganicSolid: 0,
+      wasteOrganicBottle: 0
+    };
+  }
+
+  yearLedgerRows.forEach(row => {
+    const mk = monthKeyFromDate(row.date);
+    if (!monthlyMap[mk]) return;
+    monthlyMap[mk].waterUse += safeNumber(row.water_used);
+    if (safeNumber(row.total_cm) > CM_LIMIT) monthlyMap[mk].overCount += 1;
+  });
+
+  yearPickupRows.forEach(row => {
+    const mk = monthKeyFromDate(row.pickup_date);
+    if (!monthlyMap[mk]) return;
+    const type = row.pickup_type || '폐수';
+    if (type === '폐수') {
+      monthlyMap[mk].entrusted += safeNumber(row.entrusted_amount);
+    } else {
+      monthlyMap[mk].wasteAlkali += safeNumber(row.waste_alkali_count);
+      monthlyMap[mk].wasteAcid += safeNumber(row.waste_acid_count);
+      monthlyMap[mk].wasteOrganicSolid += safeNumber(row.waste_organic_solid_count);
+      monthlyMap[mk].wasteOrganicBottle += safeNumber(row.waste_organic_bottle_count);
+    }
+  });
+
+  const monthlyRows = Object.values(monthlyMap).map(row => ({
+    ...row,
+    waterUse: round2(row.waterUse),
+    entrusted: round2(row.entrusted)
+  }));
+
+  const totalWaterUse = round2(monthlyRows.reduce((sum, r) => sum + safeNumber(r.waterUse), 0));
+  const totalEntrusted = round2(monthlyRows.reduce((sum, r) => sum + safeNumber(r.entrusted), 0));
+  const totalOverCount = monthlyRows.reduce((sum, r) => sum + safeNumber(r.overCount), 0);
+
+  const wasteTotals = monthlyRows.reduce((acc, row) => {
+    acc.alkali += safeNumber(row.wasteAlkali);
+    acc.acid += safeNumber(row.wasteAcid);
+    acc.organicSolid += safeNumber(row.wasteOrganicSolid);
+    acc.organicBottle += safeNumber(row.wasteOrganicBottle);
+    return acc;
+  }, {
+    alkali: 0,
+    acid: 0,
+    organicSolid: 0,
+    organicBottle: 0
+  });
+
+  const topOverMonth = [...monthlyRows].sort((a, b) => b.overCount - a.overCount)[0];
+  const topWaterMonth = [...monthlyRows].sort((a, b) => b.waterUse - a.waterUse)[0];
+  const topEntrustedMonth = [...monthlyRows].sort((a, b) => b.entrusted - a.entrusted)[0];
+
+  return {
+    year,
+    monthlyRows,
+    totalWaterUse,
+    totalEntrusted,
+    totalOverCount,
+    wasteTotals,
+    topOverMonth,
+    topWaterMonth,
+    topEntrustedMonth
+  };
+}
+
+function makeBarChartSvg({ title, labels, values, unit = '', color = '#2f6fed', height = 220 }) {
+  const width = 760;
+  const chartLeft = 52;
+  const chartRight = 20;
+  const chartTop = 30;
+  const chartBottom = 42;
+  const chartWidth = width - chartLeft - chartRight;
+  const chartHeight = height - chartTop - chartBottom;
+  const max = Math.max(...values, 1);
+  const barWidth = chartWidth / Math.max(values.length, 1) * 0.55;
+  const gap = chartWidth / Math.max(values.length, 1);
+
+  const bars = values.map((v, i) => {
+    const barHeight = max === 0 ? 0 : (v / max) * chartHeight;
+    const x = chartLeft + (i * gap) + (gap - barWidth) / 2;
+    const y = chartTop + (chartHeight - barHeight);
+    const labelX = x + barWidth / 2;
+    const valueY = y - 6;
+
+    return `
+      <rect x="${x}" y="${y}" width="${barWidth}" height="${barHeight}" rx="6" fill="${color}"></rect>
+      <text x="${labelX}" y="${valueY}" text-anchor="middle" font-size="11" fill="#344054">${v}</text>
+      <text x="${labelX}" y="${height - 16}" text-anchor="middle" font-size="11" fill="#667085">${labels[i]}</text>
+    `;
+  }).join('');
+
+  const grid = [0.25, 0.5, 0.75, 1].map(ratio => {
+    const y = chartTop + chartHeight - (chartHeight * ratio);
+    const label = Math.round(max * ratio * 100) / 100;
+    return `
+      <line x1="${chartLeft}" y1="${y}" x2="${width - chartRight}" y2="${y}" stroke="#e4e7ec" stroke-width="1"></line>
+      <text x="${chartLeft - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="#98a2b3">${label}</text>
+    `;
+  }).join('');
+
+  return `
+    <div style="margin-bottom:18px;">
+      <div style="font-size:14px;font-weight:800;margin-bottom:8px;color:#101828;">${escapeHtml(title)} ${unit ? `<span style="font-size:12px;color:#667085;">(${escapeHtml(unit)})</span>` : ''}</div>
+      <svg width="100%" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+        ${grid}
+        <line x1="${chartLeft}" y1="${chartTop + chartHeight}" x2="${width - chartRight}" y2="${chartTop + chartHeight}" stroke="#98a2b3" stroke-width="1"></line>
+        ${bars}
+      </svg>
+    </div>
+  `;
+}
+ function renderPickupRows(rows) {
   if (!rows.length) {
     return `<tr><td colspan="7">선택한 조건의 수거 내역이 없습니다.</td></tr>`;
   }
@@ -707,6 +1011,33 @@ function renderPickupRows(rows) {
   `).join('');
 }
 
+function renderLedgerRows(rows) {
+  const sorted = [...rows].sort((a, b) => {
+    const byDate = String(b.date || '').localeCompare(String(a.date || ''));
+    if (byDate !== 0) return byDate;
+    return String(b.created_at || '').localeCompare(String(a.created_at || ''));
+  });
+
+  if (!sorted.length) return `<tr><td colspan="12">운영일지 데이터가 없습니다.</td></tr>`;
+
+  return sorted.map(row => `
+    <tr>
+      <td>${escapeHtml(row.date)}</td>
+      <td>${formatNum(row.water_prev, 2)}</td>
+      <td>${formatNum(row.usage, 2)}</td>
+      <td>${formatNum(row.water_used, 2)}</td>
+      <td>${formatNum(row.height, 1)} cm</td>
+      <td>${row.has_external ? `${formatNum(row.external_ton || 0, 1)}T / ${formatNum(row.external_cm, 1)}cm` : '-'}</td>
+      <td>${formatNum(row.total_cm, 1)} cm</td>
+      <td>${escapeHtml(row.guideline_text)}</td>
+      <td>${escapeHtml(row.generated_text)}</td>
+      <td>${row.pickup ? `위탁 ${formatNum(row.pickup.entrusted_amount, 2)}m³<br>후높이 ${escapeHtml(String(row.pickup.after_pickup_cm ?? '-'))}cm` : '-'}</td>
+      <td>${escapeHtml(row.note || '')}</td>
+      <td>${canDelete() ? `<button class="small-btn danger" onclick="deleteDailyRow(${row.id})">삭제</button>` : '-'}</td>
+    </tr>
+  `).join('');
+}
+
 function renderApp(message = '', cls = 'muted') {
   const stats = getDerivedStats();
   const latestDaily = stats.latest;
@@ -716,6 +1047,11 @@ function renderApp(message = '', cls = 'muted') {
   const pickupYears = getPickupYears();
   if (!pickupYears.includes(pickupYearFilter)) {
     pickupYearFilter = pickupYears[0] || String(new Date().getFullYear());
+  }
+
+  const availableYears = getAvailableYears();
+  if (!availableYears.includes(yearlyReportFilter)) {
+    yearlyReportFilter = availableYears[0] || String(new Date().getFullYear());
   }
 
   const filteredPickupRows = pickupRows.filter(row => {
@@ -731,21 +1067,22 @@ function renderApp(message = '', cls = 'muted') {
       <div class="topbar">
         <div class="title-wrap">
           <h1>폐수배출시설 운영일지 웹앱</h1>
-          <div class="sub">모바일 입력, 수거 등록, 자동 계산, 엑셀 내보내기까지 포함한 MVP</div>
+          <div class="sub">모바일 입력, 수거 등록, 자동 계산, 엑셀 내보내기, 월/연 보고서 출력까지 포함한 업무형 버전</div>
           <div class="sub">로그인: ${escapeHtml(user.email)} / 권한: ${roleBadge(currentRole)}</div>
         </div>
-      <div class="top-actions">
-        ${currentRole === 'admin' ? `
-        <button class="btn soft" onclick="downloadMonthlyExcel()">CSV 다운로드</button>
-        <button class="btn soft" onclick="seedSampleData()">샘플로 초기화</button>
-        <button class="btn soft" onclick="logout()">로그아웃</button>
-        ` : currentRole === 'operator' ? `
-        <button class="btn soft" onclick="downloadMonthlyExcel()">CSV 다운로드</button>
-        <button class="btn soft" onclick="logout()">로그아웃</button>
-        ` : `
-        <button class="btn soft" onclick="logout()">로그아웃</button>
-  `}
-</div>
+
+        <div class="top-actions">
+          ${currentRole === 'admin' ? `
+            <button class="btn soft" onclick="downloadMonthlyExcel()">CSV 다운로드</button>
+            <button class="btn soft" onclick="seedSampleData()">샘플로 초기화</button>
+            <button class="btn soft" onclick="logout()">로그아웃</button>
+          ` : currentRole === 'operator' ? `
+            <button class="btn soft" onclick="downloadMonthlyExcel()">CSV 다운로드</button>
+            <button class="btn soft" onclick="logout()">로그아웃</button>
+          ` : `
+            <button class="btn soft" onclick="logout()">로그아웃</button>
+          `}
+        </div>
       </div>
 
       <div class="stats">
@@ -769,14 +1106,17 @@ function renderApp(message = '', cls = 'muted') {
             <div class="field"><label>용수 금일 지침 (G, 계량기 누적값 m³)</label><input id="daily-usage" class="input" type="number" step="0.01" oninput="updateDailyPreview()"></div>
             <div class="field"><label>폐수높이 (Q, cm)</label><input id="daily-height" class="input" type="number" step="0.1" oninput="updateDailyPreview()"></div>
             <div class="field"><label>기타사항 (P)</label><textarea id="daily-note" class="textarea" placeholder="예: 교반기 점검"></textarea></div>
+
             <div class="checkbox-row">
               <input id="daily-has-external" type="checkbox" onchange="toggleExternalBox(); updateDailyPreview();">
               <label for="daily-has-external">외부보관 있음</label>
             </div>
+
             <div id="external-box" style="display:none;">
               <div class="field"><label>외부보관량 (T)</label><input id="daily-external-ton" class="input" type="number" step="0.1" value="1" oninput="updateDailyPreview()"></div>
               <div class="field"><label>환산높이 (cm)</label><input id="daily-external-cm" class="input" type="number" step="0.1" value="22" oninput="updateDailyPreview()"></div>
             </div>
+
             ${canWrite() ? `<button class="btn primary block" onclick="saveDailyRow()">💾 저장 / 수정</button>` : `<div class="msg muted">일반 사용자는 조회만 가능합니다.</div>`}
             <div id="daily-msg" class="msg muted"></div>
           </div>
@@ -791,6 +1131,7 @@ function renderApp(message = '', cls = 'muted') {
               <div class="mini-card"><div class="mini-label">계산용 총높이</div><div id="pv-total-cm" class="mini-value">-</div></div>
               <div class="mini-card"><div class="mini-label">금일지침 / 총 발생량</div><div id="pv-guideline" class="mini-value">-</div></div>
             </div>
+
             <div class="hint-box">
               용수 G열은 <b>당일 사용량</b>이 아니라 <b>계량기 누적값</b>을 입력합니다.<br>
               당일 용수사용량은 <b>금일 지침 - 전일 지침</b>으로 자동 계산됩니다.<br>
@@ -879,21 +1220,31 @@ function renderApp(message = '', cls = 'muted') {
           </div>
         </div>
       </div>
-
-      <div class="tab-panel ${currentTab === 'ledger' ? 'active' : ''}">
+            <div class="tab-panel ${currentTab === 'ledger' ? 'active' : ''}">
         <div class="card ledger-card">
           <div class="toolbar-row">
             <div>
               <div class="section-title">🧾 운영일지</div>
               <div class="msg muted">날짜 기준 내림차순 정렬입니다. 수거 정보에는 폐수 수거만 반영됩니다.</div>
             </div>
+
             <div class="toolbar-right">
               <input id="ledger-month" class="input" type="month" value="${ledgerMonthFilter}" style="width:180px; margin:0;" onchange="changeLedgerMonth(this.value)">
-              ${currentRole === 'admin' || currentRole === 'operator'
-              ? `<button class="btn soft" onclick="downloadMonthlyExcel()">월별 엑셀 다운로드</button>`
-              : ``}
+              <select class="select" style="width:140px; margin:0;" onchange="changeYearlyReportYear(this.value)">
+                ${availableYears.map(y => `<option value="${y}" ${yearlyReportFilter === y ? 'selected' : ''}>${y}년</option>`).join('')}
+              </select>
+              ${canDownload()
+                ? `<button class="btn soft" onclick="downloadMonthlyExcel()">월별 엑셀 다운로드</button>`
+                : ``}
+              ${canDownload()
+                ? `<button class="btn soft" onclick="downloadMonthlyReportPdf()">월보고서 PDF</button>`
+                : ``}
+              ${canDownload()
+                ? `<button class="btn soft" onclick="downloadYearlyReportPdf()">연보고서 PDF</button>`
+                : ``}
             </div>
           </div>
+
           <div class="table-wrap">
             <table>
               <thead>
@@ -997,33 +1348,6 @@ function renderApp(message = '', cls = 'muted') {
   showMessage('pickup-msg', currentTab === 'pickup' ? message : '', cls);
 }
 
-function renderLedgerRows(rows) {
-  const sorted = [...rows].sort((a, b) => {
-    const byDate = String(b.date || '').localeCompare(String(a.date || ''));
-    if (byDate !== 0) return byDate;
-    return String(b.created_at || '').localeCompare(String(a.created_at || ''));
-  });
-
-  if (!sorted.length) return `<tr><td colspan="12">운영일지 데이터가 없습니다.</td></tr>`;
-
-  return sorted.map(row => `
-    <tr>
-      <td>${escapeHtml(row.date)}</td>
-      <td>${formatNum(row.water_prev, 2)}</td>
-      <td>${formatNum(row.usage, 2)}</td>
-      <td>${formatNum(row.water_used, 2)}</td>
-      <td>${formatNum(row.height, 1)} cm</td>
-      <td>${row.has_external ? `${formatNum(row.external_ton || 0, 1)}T / ${formatNum(row.external_cm, 1)}cm` : '-'}</td>
-      <td>${formatNum(row.total_cm, 1)} cm</td>
-      <td>${escapeHtml(row.guideline_text)}</td>
-      <td>${escapeHtml(row.generated_text)}</td>
-      <td>${row.pickup ? `위탁 ${formatNum(row.pickup.entrusted_amount, 2)}m³<br>후높이 ${escapeHtml(String(row.pickup.after_pickup_cm ?? '-'))}cm` : '-'}</td>
-      <td>${escapeHtml(row.note || '')}</td>
-      <td>${canDelete() ? `<button class="small-btn danger" onclick="deleteDailyRow(${row.id})">삭제</button>` : '-'}</td>
-    </tr>
-  `).join('');
-}
-
 function switchTab(tab) {
   currentTab = tab;
   renderApp();
@@ -1041,6 +1365,11 @@ function changePickupYear(value) {
 
 function changePickupTypeFilter(value) {
   pickupTypeFilter = value;
+  renderApp();
+}
+
+function changeYearlyReportYear(value) {
+  yearlyReportFilter = value;
   renderApp();
 }
 
@@ -1073,10 +1402,12 @@ function toggleExternalBox() {
 function updateDailyPreview() {
   const hasExternal = !!document.getElementById('daily-has-external')?.checked;
   toggleExternalBox();
+
   const latestMeter = (() => {
     const stats = getDerivedStats();
     return stats.latest ? Number(stats.latest.usage || 0) : 0;
   })();
+
   const meter = Number(document.getElementById('daily-usage')?.value || 0);
   const height = Number(document.getElementById('daily-height')?.value || 0);
   const extTon = Number(document.getElementById('daily-external-ton')?.value || 0);
@@ -1088,6 +1419,7 @@ function updateDailyPreview() {
   const prevGuideline = latest?.pickup?.after_pickup_cm != null
     ? cmToM3(Number(latest.pickup.after_pickup_cm))
     : (latest ? (latest.total_cm > CM_LIMIT ? 0 : cmToM3(latest.total_cm)) : 0);
+
   const generated = (meter || height)
     ? (totalCm > CM_LIMIT ? 'Unverified' : `${formatNum(round2(cmToM3(totalCm) - prevGuideline), 2)} m³`)
     : '-';
@@ -1104,14 +1436,17 @@ function setText(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value;
 }
+
 function showMessage(id, message, cls) {
   const el = document.getElementById(id);
   if (!el) return;
   el.className = `msg ${cls}`;
   el.textContent = message || '';
-}  
+}
+
 async function saveDailyRow() {
   if (!canWrite()) return renderApp('저장 권한이 없습니다.', 'err');
+
   const date = document.getElementById('daily-date').value;
   const usage = document.getElementById('daily-usage').value;
   const height = document.getElementById('daily-height').value;
@@ -1133,6 +1468,7 @@ async function saveDailyRow() {
   }]).select().single();
 
   if (error) return renderApp('일일 입력 저장 실패: ' + error.message, 'err');
+
   await logActivity('save', 'daily', data?.id, { date, usage, height });
   clearDailyForm();
   await loadAll('일일 입력 저장 완료', 'ok');
@@ -1146,6 +1482,7 @@ function clearDailyForm() {
     else if (id === 'daily-external-cm') el.value = '22';
     else el.value = '';
   });
+
   const chk = document.getElementById('daily-has-external');
   if (chk) chk.checked = false;
   toggleExternalBox();
@@ -1210,6 +1547,7 @@ async function savePickupRow() {
   const { data, error } = await sb.from(PICKUP_TABLE).insert([payload]).select().single();
 
   if (error) return renderApp('수거 등록 저장 실패: ' + error.message, 'err');
+
   await logActivity('save', 'pickup', data?.id, payload);
   clearPickupForm();
   await loadAll('수거 등록 저장 완료', 'ok');
@@ -1248,12 +1586,13 @@ function clearPickupForm() {
   if (typeEl) typeEl.value = '폐수';
   togglePickupType();
 }
-
-async function deleteDailyRow(id) {
+ async function deleteDailyRow(id) {
   if (!canDelete()) return renderApp('삭제 권한이 없습니다.', 'err');
   if (!confirm('일일 입력 데이터를 삭제하시겠습니까?')) return;
+
   const { error } = await sb.from(DAILY_TABLE).delete().eq('id', id);
   if (error) return renderApp('일일 입력 삭제 실패: ' + error.message, 'err');
+
   await logActivity('delete', 'daily', id, {});
   await loadAll('일일 입력 삭제 완료', 'ok');
 }
@@ -1261,17 +1600,21 @@ async function deleteDailyRow(id) {
 async function deletePickupRow(id) {
   if (!canDelete()) return renderApp('삭제 권한이 없습니다.', 'err');
   if (!confirm('수거 등록 데이터를 삭제하시겠습니까?')) return;
+
   const { error } = await sb.from(PICKUP_TABLE).delete().eq('id', id);
   if (error) return renderApp('수거 등록 삭제 실패: ' + error.message, 'err');
+
   await logActivity('delete', 'pickup', id, {});
   await loadAll('수거 등록 삭제 완료', 'ok');
 }
 
 async function changeRole(email) {
   if (!canAdmin()) return renderApp('관리자만 권한 변경 가능합니다.', 'err');
+
   const newRole = document.getElementById(`role-${escapeId(email)}`).value;
   const { error } = await sb.from(USERS_TABLE).update({ role: newRole }).eq('email', email);
   if (error) return renderApp('권한 변경 실패: ' + error.message, 'err');
+
   await logActivity('role_change', 'user', email, { newRole });
   await loadAll('권한 변경 완료', 'ok');
 }
@@ -1279,10 +1622,13 @@ async function changeRole(email) {
 async function transferAdmin(targetEmail) {
   if (!canAdmin()) return renderApp('관리자만 양도 가능합니다.', 'err');
   if (!confirm(`${targetEmail} 에게 관리자 권한을 양도하시겠습니까?`)) return;
+
   const demote = await sb.from(USERS_TABLE).update({ role: 'operator' }).eq('email', user.email);
   if (demote.error) return renderApp('현재 관리자 권한 변경 실패: ' + demote.error.message, 'err');
+
   const promote = await sb.from(USERS_TABLE).update({ role: 'admin' }).eq('email', targetEmail);
   if (promote.error) return renderApp('관리자 양도 실패: ' + promote.error.message, 'err');
+
   await logActivity('transfer_admin', 'user', targetEmail, { from: user.email, to: targetEmail });
   await loadMyRole();
   await loadAll('관리자 양도 완료', 'ok');
@@ -1296,10 +1642,460 @@ function seedSampleData() {
   renderApp('샘플 초기화 버튼은 현재 안내용입니다. 실제 데이터는 Supabase에서 직접 관리하거나 별도 샘플 스크립트를 연결해 주세요.', 'muted');
 }
 
-function downloadMonthlyExcel() {
-  if (!(currentRole === 'admin' || currentRole === 'operator')) {
-  return renderApp('엑셀 다운로드 권한이 없습니다.', 'err');
+function getReportBaseStyle() {
+  return `
+    <style>
+      @page { size: A4 portrait; margin: 14mm; }
+      body { font-family: Arial, sans-serif; color: #1d2939; margin: 0; }
+      .page { page-break-after: always; min-height: 100vh; }
+      .page:last-child { page-break-after: auto; }
+      .header {
+        border-bottom: 3px solid #0f172a;
+        padding-bottom: 12px;
+        margin-bottom: 18px;
+      }
+      .title { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+      .sub { color: #667085; font-size: 13px; }
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin: 18px 0;
+      }
+      .kpi {
+        border: 1px solid #d0d5dd;
+        border-radius: 12px;
+        padding: 12px;
+        background: #f8fafc;
+      }
+      .kpi-label { font-size: 12px; color: #667085; font-weight: 700; margin-bottom: 8px; }
+      .kpi-value { font-size: 22px; font-weight: 800; color: #101828; }
+      .section { margin: 18px 0; }
+      .section-title {
+        font-size: 15px;
+        font-weight: 800;
+        margin-bottom: 10px;
+        color: #101828;
+      }
+      .box {
+        border: 1px solid #d0d5dd;
+        border-radius: 12px;
+        padding: 12px;
+        background: #fff;
+      }
+      .badge-red {
+        display:inline-block;
+        padding:4px 8px;
+        border-radius:999px;
+        background:#fee4e2;
+        color:#b42318;
+        font-size:12px;
+        font-weight:700;
+      }
+      .badge-blue {
+        display:inline-block;
+        padding:4px 8px;
+        border-radius:999px;
+        background:#eaf2ff;
+        color:#175cd3;
+        font-size:12px;
+        font-weight:700;
+      }
+      .badge-amber {
+        display:inline-block;
+        padding:4px 8px;
+        border-radius:999px;
+        background:#fff1e8;
+        color:#c4320a;
+        font-size:12px;
+        font-weight:700;
+      }
+      .sign-row {
+        display:grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap:10px;
+        margin-top:20px;
+      }
+      .sign-box {
+        border: 1px solid #d0d5dd;
+        border-radius: 12px;
+        padding: 12px;
+        min-height: 70px;
+      }
+      table {
+        width:100%;
+        border-collapse: collapse;
+        font-size: 11px;
+      }
+      th, td {
+        border:1px solid #d0d5dd;
+        padding:6px 7px;
+        text-align:left;
+        vertical-align:top;
+      }
+      th {
+        background:#f2f4f7;
+        font-weight:800;
+      }
+      .small { font-size: 11px; }
+      .two-col {
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      .three-col {
+        display:grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 12px;
+      }
+    </style>
+  `;
+}
+
+function buildMonthlyReportHtml(monthKey) {
+  const data = getMonthlyReportData(monthKey);
+
+  const overDates = data.overRows.length
+    ? data.overRows.map(r => `${r.date} (${formatNum(r.total_cm, 1)}cm)`).join(', ')
+    : '없음';
+
+  const ledgerTableRows = data.ledgerRows.map(r => `
+    <tr>
+      <td>${escapeHtml(r.date)}</td>
+      <td>${formatNum(r.water_prev, 2)}</td>
+      <td>${formatNum(r.usage, 2)}</td>
+      <td>${formatNum(r.water_used, 2)}</td>
+      <td>${formatNum(r.height, 1)}</td>
+      <td>${r.has_external ? `${formatNum(r.external_ton || 0, 1)}T / ${formatNum(r.external_cm, 1)}cm` : '-'}</td>
+      <td>${formatNum(r.total_cm, 1)}</td>
+      <td>${escapeHtml(r.guideline_text)}</td>
+      <td>${escapeHtml(r.generated_text)}</td>
+      <td>${escapeHtml(r.note || '')}</td>
+    </tr>
+  `).join('');
+
+  const pickupTableRows = data.pickupMonthRows.map(r => `
+    <tr>
+      <td>${escapeHtml(r.pickup_date)}</td>
+      <td>${escapeHtml(r.pickup_type || '폐수')}</td>
+      <td>${escapeHtml(getPickupDetailText(r))}</td>
+      <td>${escapeHtml(r.certificate_no || '')}</td>
+      <td>${escapeHtml(r.contractor || '')}</td>
+      <td>${escapeHtml(r.note || '')}</td>
+    </tr>
+  `).join('');
+
+  return `
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>월간 운영 보고서</title>
+        ${getReportBaseStyle()}
+      </head>
+      <body>
+        <div class="page">
+          <div class="header">
+            <div class="title">폐수배출시설 월간 운영 보고서</div>
+            <div class="sub">${escapeHtml(getMonthRangeText(data.monthKey))}</div>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi">
+              <div class="kpi-label">총 용수 사용량</div>
+              <div class="kpi-value">${formatNum(data.totalWaterUse, 2)} m³</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">총 폐수 위탁량</div>
+              <div class="kpi-value">${formatNum(data.totalEntrusted, 2)} m³</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">폐기물 수거 건수</div>
+              <div class="kpi-value">${data.wastePickupCount}건</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">OVER 발생일수</div>
+              <div class="kpi-value">${data.overCount}일</div>
+            </div>
+          </div>
+
+          <div class="two-col">
+            <div class="section">
+              <div class="section-title">이상 발생 요약</div>
+              <div class="box small">
+                <div style="margin-bottom:8px;"><span class="badge-red">OVER 날짜</span></div>
+                <div>${escapeHtml(overDates)}</div>
+                <div style="margin-top:10px;"><b>최고 수위:</b> ${formatNum(data.maxHeight, 1)} cm</div>
+                <div style="margin-top:6px;"><b>외부보관 발생:</b> ${data.externalCount}일</div>
+              </div>
+            </div>
+
+            <div class="section">
+              <div class="section-title">수거 요약</div>
+              <div class="box small">
+                <div><span class="badge-blue">폐수 수거</span> ${data.wastewaterPickupCount}건 / 총 ${formatNum(data.totalEntrusted, 2)}m³</div>
+                <div style="margin-top:8px;"><span class="badge-amber">폐기물 수거</span> ${data.wastePickupCount}건</div>
+                <div style="margin-top:10px;">폐알칼리 ${data.wasteCounts.alkali} / 폐산 ${data.wasteCounts.acid} / 고상 ${data.wasteCounts.organicSolid} / 폐시약병 ${data.wasteCounts.organicBottle}</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">특이사항</div>
+            <div class="box small">
+              ${data.overCount > 0 ? `당월 OVER ${data.overCount}일 발생. 수위 집중 관리 필요.` : `당월 OVER 발생 없음.`}
+              ${data.externalCount > 0 ? ` 외부보관 발생 ${data.externalCount}일 확인.` : ` 외부보관 발생 없음.`}
+            </div>
+          </div>
+
+          <div class="sign-row">
+            <div class="sign-box"><b>작성자</b><br><br></div>
+            <div class="sign-box"><b>검토자</b><br><br></div>
+            <div class="sign-box"><b>작성일</b><br><br>${escapeHtml(new Date().toLocaleDateString('ko-KR'))}</div>
+          </div>
+        </div>
+
+        <div class="page">
+          <div class="header">
+            <div class="title">상세 내역</div>
+            <div class="sub">${escapeHtml(data.monthLabel)}</div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">운영일지 내역</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>날짜</th>
+                  <th>용수 전일</th>
+                  <th>용수 금일</th>
+                  <th>당일 사용량</th>
+                  <th>저장고 높이</th>
+                  <th>외부보관</th>
+                  <th>총높이</th>
+                  <th>금일지침</th>
+                  <th>총 발생량</th>
+                  <th>비고</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${ledgerTableRows || `<tr><td colspan="10">데이터 없음</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="section">
+            <div class="section-title">수거내역</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>수거일</th>
+                  <th>구분</th>
+                  <th>세부내용</th>
+                  <th>확인서번호</th>
+                  <th>처리업소</th>
+                  <th>비고</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${pickupTableRows || `<tr><td colspan="6">데이터 없음</td></tr>`}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
+function buildYearlyReportHtml(year) {
+  const data = getYearlyReportData(year);
+
+  const waterChart = makeBarChartSvg({
+    title: '월별 용수 사용량',
+    labels: data.monthlyRows.map(r => r.label),
+    values: data.monthlyRows.map(r => round2(r.waterUse)),
+    unit: 'm³',
+    color: '#2563eb'
+  });
+
+  const entrustedChart = makeBarChartSvg({
+    title: '월별 폐수 위탁량',
+    labels: data.monthlyRows.map(r => r.label),
+    values: data.monthlyRows.map(r => round2(r.entrusted)),
+    unit: 'm³',
+    color: '#0f9d58'
+  });
+
+  const overChart = makeBarChartSvg({
+    title: '월별 OVER 발생 횟수',
+    labels: data.monthlyRows.map(r => r.label),
+    values: data.monthlyRows.map(r => r.overCount),
+    unit: '일',
+    color: '#f04438'
+  });
+
+  const wasteChart = makeBarChartSvg({
+    title: '폐기물 종류별 총합',
+    labels: ['폐알칼리', '폐산', '고상', '폐시약병'],
+    values: [
+      data.wasteTotals.alkali,
+      data.wasteTotals.acid,
+      data.wasteTotals.organicSolid,
+      data.wasteTotals.organicBottle
+    ],
+    unit: '개수',
+    color: '#f79009'
+  });
+
+  const monthlyRowsHtml = data.monthlyRows.map(r => `
+    <tr>
+      <td>${escapeHtml(r.label)}</td>
+      <td>${formatNum(r.waterUse, 2)}</td>
+      <td>${formatNum(r.entrusted, 2)}</td>
+      <td>${r.overCount}</td>
+      <td>${r.wasteAlkali}</td>
+      <td>${r.wasteAcid}</td>
+      <td>${r.wasteOrganicSolid}</td>
+      <td>${r.wasteOrganicBottle}</td>
+    </tr>
+  `).join('');
+
+  return `
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>연간 운영 보고서</title>
+        ${getReportBaseStyle()}
+      </head>
+      <body>
+        <div class="page">
+          <div class="header">
+            <div class="title">폐수배출시설 연간 운영 보고서</div>
+            <div class="sub">${escapeHtml(year)}년 기준</div>
+          </div>
+
+          <div class="kpi-grid">
+            <div class="kpi">
+              <div class="kpi-label">연간 총 용수 사용량</div>
+              <div class="kpi-value">${formatNum(data.totalWaterUse, 2)} m³</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">연간 총 폐수 위탁량</div>
+              <div class="kpi-value">${formatNum(data.totalEntrusted, 2)} m³</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">연간 OVER 발생일수</div>
+              <div class="kpi-value">${data.totalOverCount}일</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">연간 폐기물 총 수량</div>
+              <div class="kpi-value">${data.wasteTotals.alkali + data.wasteTotals.acid + data.wasteTotals.organicSolid + data.wasteTotals.organicBottle}개</div>
+            </div>
+          </div>
+
+          <div class="three-col">
+            <div class="box small">
+              <div style="font-weight:800; margin-bottom:6px;">용수 사용량 최대 월</div>
+              <div>${escapeHtml(data.topWaterMonth?.label || '-')} / ${formatNum(data.topWaterMonth?.waterUse || 0, 2)}m³</div>
+            </div>
+            <div class="box small">
+              <div style="font-weight:800; margin-bottom:6px;">위탁량 최대 월</div>
+              <div>${escapeHtml(data.topEntrustedMonth?.label || '-')} / ${formatNum(data.topEntrustedMonth?.entrusted || 0, 2)}m³</div>
+            </div>
+            <div class="box small">
+              <div style="font-weight:800; margin-bottom:6px;">OVER 집중 월</div>
+              <div>${escapeHtml(data.topOverMonth?.label || '-')} / ${data.topOverMonth?.overCount || 0}일</div>
+            </div>
+          </div>
+
+          <div class="section">${waterChart}</div>
+          <div class="section">${entrustedChart}</div>
+        </div>
+
+        <div class="page">
+          <div class="header">
+            <div class="title">연간 분석 및 월별 요약</div>
+            <div class="sub">${escapeHtml(year)}년 기준</div>
+          </div>
+
+          <div class="section">${overChart}</div>
+          <div class="section">${wasteChart}</div>
+
+          <div class="section">
+            <div class="section-title">월별 요약표</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>월</th>
+                  <th>용수 사용량</th>
+                  <th>폐수 위탁량</th>
+                  <th>OVER 일수</th>
+                  <th>폐알칼리</th>
+                  <th>폐산</th>
+                  <th>고상</th>
+                  <th>폐시약병</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${monthlyRowsHtml}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
+function openReportPrintWindow(html) {
+  const win = window.open('', '_blank');
+  if (!win) {
+    return renderApp('팝업이 차단되어 보고서를 열 수 없습니다.', 'err');
   }
+
+  win.document.open();
+  win.document.write(html);
+  win.document.close();
+
+  setTimeout(() => {
+    win.focus();
+    win.print();
+  }, 500);
+}
+
+function downloadMonthlyReportPdf() {
+  if (!canDownload()) {
+    return renderApp('월보고서 출력 권한이 없습니다.', 'err');
+  }
+
+  const month = document.getElementById('ledger-month')?.value || ledgerMonthFilter;
+  if (!month) {
+    return renderApp('월보고서 기준 월이 없습니다.', 'err');
+  }
+
+  const html = buildMonthlyReportHtml(month);
+  openReportPrintWindow(html);
+}
+
+function downloadYearlyReportPdf() {
+  if (!canDownload()) {
+    return renderApp('연보고서 출력 권한이 없습니다.', 'err');
+  }
+
+  const year = yearlyReportFilter || getDefaultYearlyReportYear();
+  if (!year) {
+    return renderApp('연보고서 기준 연도가 없습니다.', 'err');
+  }
+
+  const html = buildYearlyReportHtml(year);
+  openReportPrintWindow(html);
+}
+
+function downloadMonthlyExcel() {
+  if (!canDownload()) {
+    return renderApp('엑셀 다운로드 권한이 없습니다.', 'err');
+  }
+
   const month = document.getElementById('ledger-month')?.value || ledgerMonthFilter || monthKeyFromDate(new Date().toISOString().slice(0, 10));
   const stats = getDerivedStats();
 
@@ -1398,6 +2194,7 @@ window.switchTab = switchTab;
 window.changeLedgerMonth = changeLedgerMonth;
 window.changePickupYear = changePickupYear;
 window.changePickupTypeFilter = changePickupTypeFilter;
+window.changeYearlyReportYear = changeYearlyReportYear;
 window.setPickupType = setPickupType;
 window.togglePickupType = togglePickupType;
 window.updateDailyPreview = updateDailyPreview;
@@ -1410,8 +2207,10 @@ window.changeRole = changeRole;
 window.transferAdmin = transferAdmin;
 window.seedSampleData = seedSampleData;
 window.downloadMonthlyExcel = downloadMonthlyExcel;
+window.downloadMonthlyReportPdf = downloadMonthlyReportPdf;
+window.downloadYearlyReportPdf = downloadYearlyReportPdf;
 
 init();
 </script>
 </body>
-</html>  
+</html> 
