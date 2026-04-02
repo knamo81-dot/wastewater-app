@@ -21,6 +21,14 @@
       --shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
       --radius: 20px;
       --radius-sm: 14px;
+      --sky-soft: #eaf4ff;
+      --sky-text: #175cd3;
+      --amber-soft: #fff4e5;
+      --amber-text: #b54708;
+      --indigo-soft: #eef2ff;
+      --indigo-text: #3538cd;
+      --green-soft: #ecfdf3;
+      --green-text: #027a48;
     }
 
     * { box-sizing: border-box; }
@@ -94,6 +102,7 @@
     .btn.soft { background: #fff; }
     .btn.danger { background: #fff; color: #b42318; border-color: #f3b4ad; }
     .btn.block { width: 100%; border-radius: 14px; }
+
     .stats {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -115,6 +124,7 @@
       font-weight: 800;
       line-height: 1;
     }
+
     .tabs {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -138,15 +148,18 @@
     }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
+
     .main-grid {
       display: grid;
       grid-template-columns: 500px 1fr;
       gap: 18px;
       align-items: start;
     }
+
     .form-card, .preview-card, .ledger-card, .admin-card, .log-card {
       padding: 24px;
     }
+
     .section-title {
       display: flex;
       align-items: center;
@@ -155,6 +168,7 @@
       font-weight: 800;
       margin-bottom: 18px;
     }
+
     .field { margin-bottom: 16px; }
     .field label {
       display: block;
@@ -171,6 +185,7 @@
       color: var(--text);
     }
     .textarea { min-height: 94px; resize: vertical; }
+
     .checkbox-row {
       display: flex;
       align-items: center;
@@ -182,7 +197,9 @@
       margin-bottom: 14px;
     }
     .checkbox-row input { width: auto; margin: 0; }
+
     .actions-row { display: flex; gap: 10px; flex-wrap: wrap; }
+
     .preview-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -206,6 +223,7 @@
       font-weight: 800;
       font-size: 18px;
     }
+
     .hint-box {
       border: 1px dashed var(--line);
       border-radius: 18px;
@@ -214,6 +232,72 @@
       color: #41526b;
       line-height: 1.8;
     }
+
+    .form-chip-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .type-chip {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 14px;
+      padding: 13px 12px;
+      text-align: center;
+      font-weight: 800;
+      cursor: pointer;
+      color: var(--muted);
+    }
+    .type-chip.active.wastewater {
+      background: var(--indigo-soft);
+      color: var(--indigo-text);
+      border-color: #c7d2fe;
+    }
+    .type-chip.active.waste {
+      background: var(--green-soft);
+      color: var(--green-text);
+      border-color: #b7ebc6;
+    }
+
+    .type-box {
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .type-box.wastewater {
+      border: 1px solid #dbeafe;
+      background: #f5faff;
+    }
+    .type-box.waste {
+      border: 1px solid #d1fadf;
+      background: #f3fff7;
+    }
+    .type-box-title {
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .inline-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .inline-badge.wastewater {
+      background: var(--sky-soft);
+      color: var(--sky-text);
+    }
+    .inline-badge.waste {
+      background: var(--amber-soft);
+      color: var(--amber-text);
+    }
+
     .msg {
       margin-top: 12px;
       white-space: pre-wrap;
@@ -223,6 +307,7 @@
     .msg.err { color: #b42318; }
     .msg.ok { color: var(--ok); }
     .msg.muted { color: var(--muted); font-weight: 500; }
+
     .table-wrap {
       overflow: auto;
       border: 1px solid var(--line);
@@ -232,7 +317,7 @@
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 980px;
+      min-width: 1080px;
       background: #fff;
     }
     th, td {
@@ -249,6 +334,7 @@
       position: sticky;
       top: 0;
     }
+
     .small-btn {
       border: 1px solid var(--line);
       background: #fff;
@@ -259,11 +345,13 @@
     }
     .small-btn.danger { color: #b42318; border-color: #f5c0bb; }
     .small-btn.primary { color: #0e1a38; }
+
     .two-col {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 18px;
     }
+
     .login-wrap {
       min-height: 100vh;
       display: grid;
@@ -276,6 +364,7 @@
       padding: 28px;
     }
     .login-card h2 { margin-top: 0; font-size: 28px; }
+
     .role-badge {
       display: inline-flex;
       align-items: center;
@@ -291,6 +380,7 @@
     .role-badge.admin { background: #fff1f0; color: #b42318; }
     .role-badge.operator { background: #eef7ff; color: #175cd3; }
     .role-badge.user { background: #f2f4f7; color: #344054; }
+
     .toolbar-row {
       display: flex;
       justify-content: space-between;
@@ -322,7 +412,8 @@
       .form-card, .preview-card, .ledger-card, .admin-card, .log-card { padding: 18px; }
       .top-actions { justify-content: stretch; }
       .top-actions .btn { width: 100%; }
-      table { min-width: 760px; }
+      table { min-width: 860px; }
+      .form-chip-row { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -346,6 +437,8 @@ let user = null;
 let currentRole = 'user';
 let currentTab = 'daily';
 let ledgerMonthFilter = '';
+let pickupYearFilter = '';
+let pickupTypeFilter = '전체';
 let dailyRows = [];
 let pickupRows = [];
 let userRows = [];
@@ -375,10 +468,30 @@ function canWrite() { return currentRole === 'admin' || currentRole === 'operato
 function canDelete() { return currentRole === 'admin' || currentRole === 'operator'; }
 function canAdmin() { return currentRole === 'admin'; }
 function monthKeyFromDate(v) { return String(v || '').slice(0, 7); }
+function yearKeyFromDate(v) { return String(v || '').slice(0, 4); }
+
 function getDefaultLedgerMonth() {
   const sourceDate = dailyRows.length ? dailyRows[0].date : new Date().toISOString().slice(0, 10);
   return monthKeyFromDate(sourceDate);
 }
+
+function getPickupYears() {
+  const years = [...new Set(
+    pickupRows
+      .map(r => yearKeyFromDate(r.pickup_date))
+      .filter(Boolean)
+  )].sort((a, b) => Number(b) - Number(a));
+
+  const currentYear = String(new Date().getFullYear());
+  if (!years.includes(currentYear)) years.unshift(currentYear);
+  return years;
+}
+
+function getDefaultPickupYear() {
+  const years = getPickupYears();
+  return years[0] || String(new Date().getFullYear());
+}
+
 function downloadFile(filename, content, mime) {
   const blob = new Blob([content], { type: mime });
   const url = URL.createObjectURL(blob);
@@ -481,6 +594,7 @@ async function loadAll(message = '', cls = 'muted') {
   dailyRows = dailyRes.data || [];
   pickupRows = pickupRes.data || [];
   if (!ledgerMonthFilter) ledgerMonthFilter = getDefaultLedgerMonth();
+  if (!pickupYearFilter) pickupYearFilter = getDefaultPickupYear();
   userRows = usersRes.data || [];
   logRows = logsRes.data || [];
   renderApp(message, cls);
@@ -496,7 +610,11 @@ function getDerivedStats() {
   let latestStatusClass = 'ok';
 
   const pickupMap = new Map();
-  for (const p of pickupRows) pickupMap.set(p.pickup_date, p);
+  for (const p of pickupRows) {
+    if ((p.pickup_type || '폐수') === '폐수') {
+      pickupMap.set(p.pickup_date, p);
+    }
+  }
 
   const enriched = ordered.map((row, idx) => {
     const meter = Number(row.usage || 0);
@@ -520,7 +638,9 @@ function getDerivedStats() {
     }
 
     prevMeter = meter;
-    prevGuideline = pickup?.after_pickup_cm != null ? cmToM3(Number(pickup.after_pickup_cm)) : (guidelineValue ?? prevGuideline);
+    prevGuideline = pickup?.after_pickup_cm != null
+      ? cmToM3(Number(pickup.after_pickup_cm))
+      : (guidelineValue ?? prevGuideline);
 
     return {
       ...row,
@@ -534,7 +654,10 @@ function getDerivedStats() {
     };
   });
 
-  const totalEntrusted = pickupRows.reduce((sum, p) => sum + Number(p.entrusted_amount || 0), 0);
+  const totalEntrusted = pickupRows
+    .filter(p => (p.pickup_type || '폐수') === '폐수')
+    .reduce((sum, p) => sum + Number(p.entrusted_amount || 0), 0);
+
   return {
     enrichedDaily: enriched,
     totalWaterUse,
@@ -546,11 +669,62 @@ function getDerivedStats() {
   };
 }
 
+function getPickupTypeBadge(type) {
+  const normalized = (type || '폐수');
+  if (normalized === '폐기물') {
+    return `<span class="inline-badge waste">폐기물</span>`;
+  }
+  return `<span class="inline-badge wastewater">폐수</span>`;
+}
+
+function getPickupDetailText(row) {
+  const type = row.pickup_type || '폐수';
+  if (type === '폐기물') {
+    return [
+      `폐알칼리 ${Number(row.waste_alkali_count || 0)}`,
+      `폐산 ${Number(row.waste_acid_count || 0)}`,
+      `고상 ${Number(row.waste_organic_solid_count || 0)}`,
+      `폐시약병 ${Number(row.waste_organic_bottle_count || 0)}`
+    ].join(' / ');
+  }
+  return `위탁량 ${formatNum(row.entrusted_amount, 2)}m³ / 수거후높이 ${formatNum(row.after_pickup_cm, 1)}cm`;
+}
+function renderPickupRows(rows) {
+  if (!rows.length) {
+    return `<tr><td colspan="7">선택한 조건의 수거 내역이 없습니다.</td></tr>`;
+  }
+
+  return rows.map(row => `
+    <tr>
+      <td>${escapeHtml(row.pickup_date)}</td>
+      <td>${getPickupTypeBadge(row.pickup_type || '폐수')}</td>
+      <td>${escapeHtml(getPickupDetailText(row))}</td>
+      <td>${escapeHtml(row.certificate_no || '')}</td>
+      <td>${escapeHtml(row.contractor || '')}</td>
+      <td>${escapeHtml(row.note || '')}</td>
+      <td>${canDelete() ? `<button class="small-btn danger" onclick="deletePickupRow(${row.id})">삭제</button>` : '-'}</td>
+    </tr>
+  `).join('');
+}
+
 function renderApp(message = '', cls = 'muted') {
   const stats = getDerivedStats();
   const latestDaily = stats.latest;
   const filteredLedgerRows = stats.enrichedDaily.filter(row => !ledgerMonthFilter || monthKeyFromDate(row.date) === ledgerMonthFilter);
   const latestMeter = latestDaily ? Number(latestDaily.usage || 0) : 0;
+
+  const pickupYears = getPickupYears();
+  if (!pickupYears.includes(pickupYearFilter)) {
+    pickupYearFilter = pickupYears[0] || String(new Date().getFullYear());
+  }
+
+  const filteredPickupRows = pickupRows.filter(row => {
+    const rowYear = yearKeyFromDate(row.pickup_date);
+    const rowType = row.pickup_type || '폐수';
+    const yearOk = !pickupYearFilter || rowYear === pickupYearFilter;
+    const typeOk = pickupTypeFilter === '전체' || rowType === pickupTypeFilter;
+    return yearOk && typeOk;
+  });
 
   document.getElementById('app').innerHTML = `
     <div class="app-shell">
@@ -625,43 +799,73 @@ function renderApp(message = '', cls = 'muted') {
         <div class="main-grid">
           <div class="card form-card">
             <div class="section-title">🚛 수거 등록</div>
+
+            <div class="field">
+              <label>구분</label>
+              <div class="form-chip-row">
+                <button type="button" id="type-btn-water" class="type-chip wastewater active" onclick="setPickupType('폐수')">폐수</button>
+                <button type="button" id="type-btn-waste" class="type-chip waste" onclick="setPickupType('폐기물')">폐기물</button>
+              </div>
+              <input id="pickup-type" type="hidden" value="폐수">
+            </div>
+
             <div class="field"><label>수거일</label><input id="pickup-date" class="input" type="date"></div>
-            <div class="field"><label>위탁량 (m³)</label><input id="pickup-amount" class="input" type="number" step="0.01"></div>
             <div class="field"><label>확인서 일련번호</label><input id="pickup-cert" class="input"></div>
             <div class="field"><label>처리업소</label><input id="pickup-contractor" class="input"></div>
-            <div class="field"><label>수거 후 높이 (괄호값, cm)</label><input id="pickup-after-cm" class="input" type="number" step="0.1"></div>
+
+            <div id="pickup-wastewater-box" class="type-box wastewater">
+              <div class="type-box-title">폐수 선택 시 입력 항목</div>
+              <div class="field"><label>위탁량 (m³)</label><input id="pickup-amount" class="input" type="number" step="0.01"></div>
+              <div class="field"><label>수거 후 높이 (괄호값, cm)</label><input id="pickup-after-cm" class="input" type="text" placeholder="예: 0.0 또는 over 154"></div>
+            </div>
+
+            <div id="pickup-waste-box" class="type-box waste" style="display:none;">
+              <div class="type-box-title">폐기물 선택 시 입력 항목</div>
+              <div class="field"><label>폐알칼리 (개수)</label><input id="waste-alkali-count" class="input" type="number" step="1" min="0" value="0"></div>
+              <div class="field"><label>폐산 (개수)</label><input id="waste-acid-count" class="input" type="number" step="1" min="0" value="0"></div>
+              <div class="field"><label>폐유기용제 (고상, 개수)</label><input id="waste-organic-solid-count" class="input" type="number" step="1" min="0" value="0"></div>
+              <div class="field"><label>폐유기용제 (폐시약병, 개수)</label><input id="waste-organic-bottle-count" class="input" type="number" step="1" min="0" value="0"></div>
+            </div>
+
             <div class="field"><label>비고</label><textarea id="pickup-note" class="textarea"></textarea></div>
+
             ${canWrite() ? `<button class="btn primary block" onclick="savePickupRow()">💾 수거 등록 저장</button>` : `<div class="msg muted">일반 사용자는 조회만 가능합니다.</div>`}
             <div id="pickup-msg" class="msg muted"></div>
           </div>
 
           <div class="card preview-card">
-            <div class="section-title">📋 최근 수거 내역</div>
+            <div class="toolbar-row">
+              <div>
+                <div class="section-title">📋 수거내역</div>
+                <div class="msg muted">선택한 연도의 수거내역을 날짜 기준 내림차순으로 확인합니다. 폐수는 운영일지에 반영되고, 폐기물은 기록용으로만 저장됩니다.</div>
+              </div>
+              <div class="toolbar-right">
+                <select class="select" style="width:140px; margin:0;" onchange="changePickupYear(this.value)">
+                  ${pickupYears.map(y => `<option value="${y}" ${pickupYearFilter === y ? 'selected' : ''}>${y}년</option>`).join('')}
+                </select>
+                <select class="select" style="width:140px; margin:0;" onchange="changePickupTypeFilter(this.value)">
+                  <option value="전체" ${pickupTypeFilter === '전체' ? 'selected' : ''}>전체</option>
+                  <option value="폐수" ${pickupTypeFilter === '폐수' ? 'selected' : ''}>폐수만</option>
+                  <option value="폐기물" ${pickupTypeFilter === '폐기물' ? 'selected' : ''}>폐기물만</option>
+                </select>
+              </div>
+            </div>
+
             <div class="table-wrap">
               <table>
                 <thead>
                   <tr>
                     <th>수거일</th>
-                    <th>위탁량</th>
+                    <th>구분</th>
+                    <th>세부내용</th>
                     <th>확인서번호</th>
                     <th>처리업소</th>
-                    <th>수거후높이</th>
                     <th>비고</th>
                     <th>삭제</th>
                   </tr>
                 </thead>
                 <tbody>
-                  ${pickupRows.length ? pickupRows.map(row => `
-                    <tr>
-                      <td>${escapeHtml(row.pickup_date)}</td>
-                      <td>${formatNum(row.entrusted_amount, 2)}</td>
-                      <td>${escapeHtml(row.certificate_no || '')}</td>
-                      <td>${escapeHtml(row.contractor || '')}</td>
-                      <td>${formatNum(row.after_pickup_cm, 1)}</td>
-                      <td>${escapeHtml(row.note || '')}</td>
-                      <td>${canDelete() ? `<button class="small-btn danger" onclick="deletePickupRow(${row.id})">삭제</button>` : '-'}</td>
-                    </tr>
-                  `).join('') : `<tr><td colspan="7">수거 내역이 없습니다.</td></tr>`}
+                  ${renderPickupRows(filteredPickupRows)}
                 </tbody>
               </table>
             </div>
@@ -674,7 +878,7 @@ function renderApp(message = '', cls = 'muted') {
           <div class="toolbar-row">
             <div>
               <div class="section-title">🧾 운영일지</div>
-              <div class="msg muted">날짜 기준 내림차순 정렬입니다. 중간 날짜를 삭제하거나 나중에 입력해도 최신 날짜가 위로 올라옵니다.</div>
+              <div class="msg muted">날짜 기준 내림차순 정렬입니다. 수거 정보에는 폐수 수거만 반영됩니다.</div>
             </div>
             <div class="toolbar-right">
               <input id="ledger-month" class="input" type="month" value="${ledgerMonthFilter}" style="width:180px; margin:0;" onchange="changeLedgerMonth(this.value)">
@@ -779,6 +983,7 @@ function renderApp(message = '', cls = 'muted') {
   `;
 
   updateDailyPreview();
+  togglePickupType();
   showMessage('daily-msg', currentTab === 'daily' ? message : '', cls);
   showMessage('pickup-msg', currentTab === 'pickup' ? message : '', cls);
 }
@@ -803,7 +1008,7 @@ function renderLedgerRows(rows) {
       <td>${formatNum(row.total_cm, 1)} cm</td>
       <td>${escapeHtml(row.guideline_text)}</td>
       <td>${escapeHtml(row.generated_text)}</td>
-      <td>${row.pickup ? `위탁 ${formatNum(row.pickup.entrusted_amount, 2)}m³<br>후높이 ${formatNum(row.pickup.after_pickup_cm, 1)}cm` : '-'}</td>
+      <td>${row.pickup ? `위탁 ${formatNum(row.pickup.entrusted_amount, 2)}m³<br>후높이 ${escapeHtml(String(row.pickup.after_pickup_cm ?? '-'))}cm` : '-'}</td>
       <td>${escapeHtml(row.note || '')}</td>
       <td>${canDelete() ? `<button class="small-btn danger" onclick="deleteDailyRow(${row.id})">삭제</button>` : '-'}</td>
     </tr>
@@ -818,6 +1023,36 @@ function switchTab(tab) {
 function changeLedgerMonth(value) {
   ledgerMonthFilter = value;
   renderApp();
+}
+
+function changePickupYear(value) {
+  pickupYearFilter = value;
+  renderApp();
+}
+
+function changePickupTypeFilter(value) {
+  pickupTypeFilter = value;
+  renderApp();
+}
+
+function setPickupType(type) {
+  const hidden = document.getElementById('pickup-type');
+  if (hidden) hidden.value = type;
+  togglePickupType();
+}
+
+function togglePickupType() {
+  const type = document.getElementById('pickup-type')?.value || '폐수';
+  const waterBox = document.getElementById('pickup-wastewater-box');
+  const wasteBox = document.getElementById('pickup-waste-box');
+  const waterBtn = document.getElementById('type-btn-water');
+  const wasteBtn = document.getElementById('type-btn-waste');
+
+  if (waterBox) waterBox.style.display = type === '폐수' ? 'block' : 'none';
+  if (wasteBox) wasteBox.style.display = type === '폐기물' ? 'block' : 'none';
+
+  if (waterBtn) waterBtn.className = `type-chip wastewater ${type === '폐수' ? 'active' : ''}`;
+  if (wasteBtn) wasteBtn.className = `type-chip waste ${type === '폐기물' ? 'active' : ''}`;
 }
 
 function toggleExternalBox() {
@@ -841,8 +1076,12 @@ function updateDailyPreview() {
   const waterUsed = meter ? round2(meter - latestMeter) : null;
   const guideline = meter || height ? getTodayGuidelineText(totalCm) : '-';
   const latest = getDerivedStats().latest;
-  const prevGuideline = latest?.pickup?.after_pickup_cm != null ? cmToM3(Number(latest.pickup.after_pickup_cm)) : (latest ? (latest.total_cm > CM_LIMIT ? 0 : cmToM3(latest.total_cm)) : 0);
-  const generated = (meter || height) ? (totalCm > CM_LIMIT ? 'Unverified' : `${formatNum(round2(cmToM3(totalCm) - prevGuideline), 2)} m³`) : '-';
+  const prevGuideline = latest?.pickup?.after_pickup_cm != null
+    ? cmToM3(Number(latest.pickup.after_pickup_cm))
+    : (latest ? (latest.total_cm > CM_LIMIT ? 0 : cmToM3(latest.total_cm)) : 0);
+  const generated = (meter || height)
+    ? (totalCm > CM_LIMIT ? 'Unverified' : `${formatNum(round2(cmToM3(totalCm) - prevGuideline), 2)} m³`)
+    : '-';
 
   setText('pv-water-prev', `${formatNum(latestMeter, 2)} m³`);
   setText('pv-water-today', meter ? `${formatNum(meter, 2)} m³` : '-');
@@ -861,8 +1100,7 @@ function showMessage(id, message, cls) {
   if (!el) return;
   el.className = `msg ${cls}`;
   el.textContent = message || '';
-}
-
+}  
 async function saveDailyRow() {
   if (!canWrite()) return renderApp('저장 권한이 없습니다.', 'err');
   const date = document.getElementById('daily-date').value;
@@ -907,35 +1145,99 @@ function clearDailyForm() {
 
 async function savePickupRow() {
   if (!canWrite()) return renderApp('저장 권한이 없습니다.', 'err');
+
+  const pickupType = document.getElementById('pickup-type')?.value || '폐수';
   const pickupDate = document.getElementById('pickup-date').value;
-  const entrustedAmount = document.getElementById('pickup-amount').value;
   const certificateNo = document.getElementById('pickup-cert').value;
   const contractor = document.getElementById('pickup-contractor').value;
-  const afterPickupCm = document.getElementById('pickup-after-cm').value;
   const note = document.getElementById('pickup-note').value;
 
-  if (!pickupDate || entrustedAmount === '') return renderApp('수거일과 위탁량은 필수입니다.', 'err');
+  if (!pickupDate) return renderApp('수거일은 필수입니다.', 'err');
 
-  const { data, error } = await sb.from(PICKUP_TABLE).insert([{
+  const payload = {
     pickup_date: pickupDate,
-    entrusted_amount: parseFloat(entrustedAmount),
+    pickup_type: pickupType,
     certificate_no: certificateNo,
     contractor,
-    after_pickup_cm: afterPickupCm === '' ? null : parseFloat(afterPickupCm),
     note
-  }]).select().single();
+  };
+
+  if (pickupType === '폐수') {
+    const entrustedAmount = document.getElementById('pickup-amount').value;
+    const afterPickupCmRaw = document.getElementById('pickup-after-cm').value.trim();
+
+    if (entrustedAmount === '') return renderApp('폐수는 위탁량이 필수입니다.', 'err');
+
+    payload.entrusted_amount = parseFloat(entrustedAmount);
+
+    if (afterPickupCmRaw === '') {
+      payload.after_pickup_cm = null;
+    } else {
+      const normalized = afterPickupCmRaw.toLowerCase().replace(/\s+/g, '');
+      if (normalized.startsWith('over')) {
+        payload.after_pickup_cm = CM_LIMIT;
+      } else {
+        const parsed = Number(afterPickupCmRaw);
+        if (Number.isNaN(parsed)) {
+          return renderApp('수거 후 높이는 숫자 또는 over 154 형식으로 입력하세요.', 'err');
+        }
+        payload.after_pickup_cm = parsed;
+      }
+    }
+
+    payload.waste_alkali_count = 0;
+    payload.waste_acid_count = 0;
+    payload.waste_organic_solid_count = 0;
+    payload.waste_organic_bottle_count = 0;
+  } else {
+    payload.entrusted_amount = null;
+    payload.after_pickup_cm = null;
+    payload.waste_alkali_count = parseInt(document.getElementById('waste-alkali-count').value || 0, 10);
+    payload.waste_acid_count = parseInt(document.getElementById('waste-acid-count').value || 0, 10);
+    payload.waste_organic_solid_count = parseInt(document.getElementById('waste-organic-solid-count').value || 0, 10);
+    payload.waste_organic_bottle_count = parseInt(document.getElementById('waste-organic-bottle-count').value || 0, 10);
+  }
+
+  const { data, error } = await sb.from(PICKUP_TABLE).insert([payload]).select().single();
 
   if (error) return renderApp('수거 등록 저장 실패: ' + error.message, 'err');
-  await logActivity('save', 'pickup', data?.id, { pickupDate, entrustedAmount, contractor });
+  await logActivity('save', 'pickup', data?.id, payload);
   clearPickupForm();
   await loadAll('수거 등록 저장 완료', 'ok');
 }
 
 function clearPickupForm() {
-  ['pickup-date','pickup-amount','pickup-cert','pickup-contractor','pickup-after-cm','pickup-note'].forEach(id => {
+  const resetIds = [
+    'pickup-date',
+    'pickup-cert',
+    'pickup-contractor',
+    'pickup-amount',
+    'pickup-after-cm',
+    'pickup-note',
+    'waste-alkali-count',
+    'waste-acid-count',
+    'waste-organic-solid-count',
+    'waste-organic-bottle-count'
+  ];
+
+  resetIds.forEach(id => {
     const el = document.getElementById(id);
-    if (el) el.value = '';
+    if (!el) return;
+    if (
+      id === 'waste-alkali-count' ||
+      id === 'waste-acid-count' ||
+      id === 'waste-organic-solid-count' ||
+      id === 'waste-organic-bottle-count'
+    ) {
+      el.value = '0';
+    } else {
+      el.value = '';
+    }
   });
+
+  const typeEl = document.getElementById('pickup-type');
+  if (typeEl) typeEl.value = '폐수';
+  togglePickupType();
 }
 
 async function deleteDailyRow(id) {
@@ -988,10 +1290,15 @@ function seedSampleData() {
 function downloadMonthlyExcel() {
   const month = document.getElementById('ledger-month')?.value || ledgerMonthFilter || monthKeyFromDate(new Date().toISOString().slice(0, 10));
   const stats = getDerivedStats();
-  const ledgerRows = [...stats.enrichedDaily].filter(r => monthKeyFromDate(r.date) === month)
+
+  const ledgerRows = [...stats.enrichedDaily]
+    .filter(r => monthKeyFromDate(r.date) === month)
     .sort((a, b) => String(b.date).localeCompare(String(a.date)) || String(b.created_at || '').localeCompare(String(a.created_at || '')));
-  const pickupFiltered = pickupRows.filter(r => monthKeyFromDate(r.pickup_date) === month)
+
+  const pickupFiltered = pickupRows
+    .filter(r => monthKeyFromDate(r.pickup_date) === month)
     .sort((a, b) => String(b.pickup_date).localeCompare(String(a.pickup_date)) || String(b.created_at || '').localeCompare(String(a.created_at || '')));
+
   const logsFiltered = logRows.filter(r => monthKeyFromDate(r.created_at) === month);
 
   const sheet1 = [
@@ -1006,14 +1313,21 @@ function downloadMonthlyExcel() {
       formatNum(r.total_cm,1),
       r.guideline_text,
       r.generated_text,
-      r.pickup ? `위탁 ${formatNum(r.pickup.entrusted_amount,2)} / 후높이 ${formatNum(r.pickup.after_pickup_cm,1)}` : '-',
+      r.pickup ? `위탁 ${formatNum(r.pickup.entrusted_amount,2)} / 후높이 ${String(r.pickup.after_pickup_cm ?? '-')}` : '-',
       r.note || ''
     ])
   ];
 
   const sheet2 = [
-    ['수거일','위탁량','확인서번호','처리업소','수거후높이','비고'],
-    ...pickupFiltered.map(r => [r.pickup_date, formatNum(r.entrusted_amount,2), r.certificate_no || '', r.contractor || '', formatNum(r.after_pickup_cm,1), r.note || ''])
+    ['수거일','구분','세부내용','확인서번호','처리업소','비고'],
+    ...pickupFiltered.map(r => [
+      r.pickup_date,
+      r.pickup_type || '폐수',
+      getPickupDetailText(r),
+      r.certificate_no || '',
+      r.contractor || '',
+      r.note || ''
+    ])
   ];
 
   const sheet3 = [
@@ -1070,6 +1384,10 @@ window.signup = signup;
 window.logout = logout;
 window.switchTab = switchTab;
 window.changeLedgerMonth = changeLedgerMonth;
+window.changePickupYear = changePickupYear;
+window.changePickupTypeFilter = changePickupTypeFilter;
+window.setPickupType = setPickupType;
+window.togglePickupType = togglePickupType;
 window.updateDailyPreview = updateDailyPreview;
 window.toggleExternalBox = toggleExternalBox;
 window.saveDailyRow = saveDailyRow;
@@ -1084,4 +1402,4 @@ window.downloadMonthlyExcel = downloadMonthlyExcel;
 init();
 </script>
 </body>
-</html>
+</html>  
