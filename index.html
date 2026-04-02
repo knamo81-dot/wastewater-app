@@ -734,11 +734,18 @@ function renderApp(message = '', cls = 'muted') {
           <div class="sub">모바일 입력, 수거 등록, 자동 계산, 엑셀 내보내기까지 포함한 MVP</div>
           <div class="sub">로그인: ${escapeHtml(user.email)} / 권한: ${roleBadge(currentRole)}</div>
         </div>
-        <div class="top-actions">
-          <button class="btn soft" onclick="downloadMonthlyExcel()">CSV 다운로드</button>
-          <button class="btn soft" onclick="seedSampleData()">샘플로 초기화</button>
-          <button class="btn soft" onclick="logout()">로그아웃</button>
-        </div>
+      <div class="top-actions">
+        ${currentRole === 'admin' ? `
+        <button class="btn soft" onclick="downloadMonthlyExcel()">CSV 다운로드</button>
+        <button class="btn soft" onclick="seedSampleData()">샘플로 초기화</button>
+        <button class="btn soft" onclick="logout()">로그아웃</button>
+        ` : currentRole === 'operator' ? `
+        <button class="btn soft" onclick="downloadMonthlyExcel()">CSV 다운로드</button>
+        <button class="btn soft" onclick="logout()">로그아웃</button>
+        ` : `
+        <button class="btn soft" onclick="logout()">로그아웃</button>
+  `}
+</div>
       </div>
 
       <div class="stats">
