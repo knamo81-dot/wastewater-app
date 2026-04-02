@@ -993,6 +993,84 @@ function makeBarChartSvg({ title, labels, values, unit = '', color = '#2f6fed', 
     </div>
   `;
 }
+  function makeStackedBarChartSvg({
+  title,
+  labels,
+  series,
+  colors,
+  unit = '',
+  height = 260
+}) {
+  const width = 760;
+  const chartLeft = 52;
+  const chartRight = 20;
+  const chartTop = 30;
+  const chartBottom = 42;
+  const chartWidth = width - chartLeft - chartRight;
+  const chartHeight = height - chartTop - chartBottom;
+
+  const totals = labels.map((_, idx) =>
+    series.reduce((sum, s) => sum + safeNumber(s.values[idx]), 0)
+  );
+  const max = Math.max(...totals, 1);
+
+  const barWidth = chartWidth / Math.max(labels.length, 1) * 0.55;
+  const gap = chartWidth / Math.max(labels.length, 1);
+
+  let bars = '';
+
+  labels.forEach((label, i) => {
+    const x = chartLeft + (i * gap) + (gap - barWidth) / 2;
+    let currentTop = chartTop + chartHeight;
+
+    series.forEach((s, sIdx) => {
+      const value = safeNumber(s.values[i]);
+      const segHeight = max === 0 ? 0 : (value / max) * chartHeight;
+      const y = currentTop - segHeight;
+
+      if (segHeight > 0) {
+        bars += `
+          <rect x="${x}" y="${y}" width="${barWidth}" height="${segHeight}" rx="2" fill="${colors[sIdx]}"></rect>
+        `;
+      }
+
+      currentTop = y;
+    });
+
+    bars += `
+      <text x="${x + barWidth / 2}" y="${chartTop + chartHeight - ((totals[i] / max) * chartHeight) - 6}" text-anchor="middle" font-size="11" fill="#344054">${totals[i]}</text>
+      <text x="${x + barWidth / 2}" y="${height - 16}" text-anchor="middle" font-size="11" fill="#667085">${label}</text>
+    `;
+  });
+
+  const grid = [0.25, 0.5, 0.75, 1].map(ratio => {
+    const y = chartTop + chartHeight - (chartHeight * ratio);
+    const label = Math.round(max * ratio * 100) / 100;
+    return `
+      <line x1="${chartLeft}" y1="${y}" x2="${width - chartRight}" y2="${y}" stroke="#e4e7ec" stroke-width="1"></line>
+      <text x="${chartLeft - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="#98a2b3">${label}</text>
+    `;
+  }).join('');
+
+  const legend = series.map((s, idx) => `
+    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#475467;">
+      <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${colors[idx]};"></span>
+      <span>${escapeHtml(s.name)}</span>
+    </div>
+  `).join('');
+
+  return `
+    <div style="margin-bottom:18px;">
+      <div style="font-size:14px;font-weight:800;margin-bottom:8px;color:#101828;">${escapeHtml(title)} ${unit ? `<span style="font-size:12px;color:#667085;">(${escapeHtml(unit)})</span>` : ''}</div>
+      <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px;">${legend}</div>
+      <svg width="100%" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+        ${grid}
+        <line x1="${chartLeft}" y1="${chartTop + chartHeight}" x2="${width - chartRight}" y2="${chartTop + chartHeight}" stroke="#98a2b3" stroke-width="1"></line>
+        ${bars}
+      </svg>
+    </div>
+  `;
+}
  function renderPickupRows(rows) {
   if (!rows.length) {
     return `<tr><td colspan="7">선택한 조건의 수거 내역이 없습니다.</td></tr>`;
@@ -1934,7 +2012,7 @@ function buildYearlyReportHtml(year) {
     color: '#f04438'
   });
 
-  const wasteChart = makeBarChartSvg({
+  const wasteTotalChart = makeBarChartSvg({
     title: '폐기물 종류별 총합',
     labels: ['폐알칼리', '폐산', '고상', '폐시약병'],
     values: [
@@ -1945,6 +2023,19 @@ function buildYearlyReportHtml(year) {
     ],
     unit: '개수',
     color: '#f79009'
+  });
+
+  const wasteMonthlyStackedChart = makeStackedBarChartSvg({
+    title: '월별 폐기물 추이',
+    labels: data.monthlyRows.map(r => r.label),
+    series: [
+      { name: '폐알칼리', values: data.monthlyRows.map(r => r.wasteAlkali) },
+      { name: '폐산', values: data.monthlyRows.map(r => r.wasteAcid) },
+      { name: '고상', values: data.monthlyRows.map(r => r.wasteOrganicSolid) },
+      { name: '폐시약병', values: data.monthlyRows.map(r => r.wasteOrganicBottle) }
+    ],
+    colors: ['#f79009', '#f04438', '#12b76a', '#6172f3'],
+    unit: '개수'
   });
 
   const monthlyRowsHtml = data.monthlyRows.map(r => `
@@ -2014,12 +2105,13 @@ function buildYearlyReportHtml(year) {
 
         <div class="page">
           <div class="header">
-            <div class="title">연간 분석 및 월별 요약</div>
+            <div class="title">연간 분석 및 폐기물 추이</div>
             <div class="sub">${escapeHtml(year)}년 기준</div>
           </div>
 
           <div class="section">${overChart}</div>
-          <div class="section">${wasteChart}</div>
+          <div class="section">${wasteTotalChart}</div>
+          <div class="section">${wasteMonthlyStackedChart}</div>
 
           <div class="section">
             <div class="section-title">월별 요약표</div>
