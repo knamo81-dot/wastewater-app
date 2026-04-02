@@ -889,7 +889,9 @@ function renderApp(message = '', cls = 'muted') {
             </div>
             <div class="toolbar-right">
               <input id="ledger-month" class="input" type="month" value="${ledgerMonthFilter}" style="width:180px; margin:0;" onchange="changeLedgerMonth(this.value)">
-              <button class="btn soft" onclick="downloadMonthlyExcel()">월별 엑셀 다운로드</button>
+              ${currentRole === 'admin' || currentRole === 'operator'
+              ? `<button class="btn soft" onclick="downloadMonthlyExcel()">월별 엑셀 다운로드</button>`
+              : ``}
             </div>
           </div>
           <div class="table-wrap">
@@ -1295,6 +1297,9 @@ function seedSampleData() {
 }
 
 function downloadMonthlyExcel() {
+  if (!(currentRole === 'admin' || currentRole === 'operator')) {
+  return renderApp('엑셀 다운로드 권한이 없습니다.', 'err');
+  }
   const month = document.getElementById('ledger-month')?.value || ledgerMonthFilter || monthKeyFromDate(new Date().toISOString().slice(0, 10));
   const stats = getDerivedStats();
 
