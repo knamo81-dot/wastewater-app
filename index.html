@@ -180,16 +180,35 @@ function renderReferenceContent(){
   const meta = cleaned[1] || '';
   const body = cleaned.slice(2);
 
-  const bodyHtml = body.map(line => {
-    const escaped = escapeHtml(line);
+let mode = null; // 'Q' or 'A' or null
 
-if (line.startsWith('Q')) {return `<div class="doc-section" style="font-weight:900;">${escaped}</div>`;}
+const bodyHtml = body.map(line => {
+  const escaped = escapeHtml(line);
 
-if (line.startsWith('A')) {return `<div class="doc-text" style="margin-left:10px;">${escaped}</div>`;} 
-    {return `<div class="doc-section">${escaped}</div>`;}
+  // Q 시작
+  if (line.startsWith('Q')) {
+    mode = 'Q';
+    return `<div class="doc-section" style="font-weight:900;">${escaped}</div>`;
+  }
 
-    return `<div class="doc-text">${escaped}</div>`;
-  }).join('');
+  // A 시작
+  if (line.startsWith('A')) {
+    mode = 'A';
+    return `<div class="doc-text" style="margin-left:10px;">${escaped}</div>`;
+  }
+
+  // 이후 줄 처리 (핵심🔥)
+  if (mode === 'A') {
+    return `<div class="doc-text" style="margin-left:10px;">${escaped}</div>`;
+  }
+
+  if (mode === 'Q') {
+    return `<div class="doc-section" style="font-weight:900;">${escaped}</div>`;
+  }
+
+  // 일반 텍스트
+  return `<div class="doc-text">${escaped}</div>`;
+}).join('');
 
   return `
     <div class="toolbar-row">
