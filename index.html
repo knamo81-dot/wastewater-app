@@ -85,6 +85,12 @@ table{width:100%;border-collapse:collapse;min-width:1100px;background:#fff} th,t
 .ledger-approval-box{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end}
 .btn.approval-on{background:var(--navy);color:#fff;border-color:var(--navy)}
 
+.tabs-main{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;flex:1}
+.tabs-wrap{display:flex;gap:12px;align-items:center;margin-bottom:18px}
+.admin-mini-btn{padding:10px 14px;font-size:13px;border-radius:14px;white-space:nowrap}
+.admin-panel-grid{display:grid;grid-template-columns:1fr;gap:18px}
+
+
 @media (max-width:1100px){.stats{grid-template-columns:repeat(2,1fr)} .main-grid,.ref-layout{grid-template-columns:1fr} .preview-grid{grid-template-columns:repeat(2,1fr)} .two-col,.three-col{grid-template-columns:1fr}}
 @media (max-width:720px){.app-shell{padding:12px} .topbar{flex-direction:column} .title-wrap h1{font-size:24px} .stats,.tabs,.preview-grid{grid-template-columns:1fr} .form-card,.preview-card,.ledger-card,.admin-card,.log-card,.ref-card{padding:18px} table{min-width:860px} .form-chip-row{grid-template-columns:1fr}}
 </style>
@@ -376,11 +382,14 @@ document.getElementById('app').innerHTML=`<div class="app-shell">
 <div class="card stat-box"><div class="stat-label">초과 발생 일수</div><div class="stat-value">${stats.overCount}일</div></div>
 <div class="card stat-box"><div class="stat-label">최근 상태</div><div class="stat-value">${stats.latestStatusClass==='danger'?`<span class="inline-badge locked">${stats.latestStatus}</span>`:`<span class="inline-badge ok">${stats.latestStatus}</span>`}</div></div>
 </div>
-<div class="tabs">
-<button class="tab-btn ${currentTab==='daily'?'active':''}" onclick="switchTab('daily')">일일 입력</button>
-<button class="tab-btn ${currentTab==='pickup'?'active':''}" onclick="switchTab('pickup')">수거 등록</button>
-<button class="tab-btn ${currentTab==='ledger'?'active':''}" onclick="switchTab('ledger')">운영일지</button>
-<button class="tab-btn ${currentTab==='reference'?'active':''}" onclick="switchTab('reference')">운영 관련자료</button>
+<div class="tabs-wrap">
+  <div class="tabs-main">
+    <button class="tab-btn ${currentTab==='daily'?'active':''}" onclick="switchTab('daily')">일일 입력</button>
+    <button class="tab-btn ${currentTab==='pickup'?'active':''}" onclick="switchTab('pickup')">수거 등록</button>
+    <button class="tab-btn ${currentTab==='ledger'?'active':''}" onclick="switchTab('ledger')">운영일지</button>
+    <button class="tab-btn ${currentTab==='reference'?'active':''}" onclick="switchTab('reference')">운영 관련자료</button>
+  </div>
+  ${canAdmin()?`<button class="btn soft admin-mini-btn" onclick="switchTab('adminPanel')">관리자기능</button>`:''}
 </div>
 
 <div class="tab-panel ${currentTab==='daily'?'active':''}">
@@ -456,9 +465,13 @@ ${canWrite()?`<button class="btn primary block" onclick="savePickupRow()">💾 �
 <div class="table-wrap"><table><thead><tr><th>날짜</th><th>용수 전일</th><th>용수 금일</th><th>당일 사용량</th><th>저장고 높이</th><th>외부보관</th><th>계산용 총높이</th><th>금일지침</th><th>총 발생량</th><th>수거 정보</th><th>기타</th><th>삭제</th></tr></thead><tbody>${renderLedgerRows(filteredLedgerRows)}</tbody></table></div>
 </div>
 
-${canAdmin()?`<div class="two-col" style="margin-top:18px;">
-<div class="card admin-card"><div class="section-title">👥 관리자 기능</div><div class="msg muted">권한 변경 및 사용자별 결재 사인 이미지 등록</div><div class="table-wrap"><table><thead><tr><th>이메일</th><th>현재 권한</th><th>권한 변경</th><th>사인 업로드</th><th>사인 미리보기</th></tr></thead><tbody>${userRows.map(u=>`<tr><td>${escapeHtml(u.email)}</td><td>${roleBadge(u.role)}</td><td><div style="display:flex;gap:8px;align-items:center;min-width:260px;"><select id="role-${escapeId(u.email)}" class="select" style="margin:0;min-width:140px;"><option value="user" ${u.role==='user'?'selected':''}>user</option><option value="operator" ${u.role==='operator'?'selected':''}>operator</option><option value="manager" ${u.role==='supervisor'?'selected':''}>책임자</option><option value="admin" ${u.role==='admin'?'selected':''}>admin</option></select><button class="small-btn" onclick="changeRole('${u.email}')">변경</button></div></td><td><input type="file" accept="image/*" onchange="uploadSignatureForUser('${u.email}', this.files[0])"></td><td>${u.signature_url?`<img class="signature-preview" src="${u.signature_url}" alt="signature">`:'-'}</td></tr>`).join('')}</tbody></table></div></div>
-<div class="card log-card"><div class="section-title">🕒 저장/삭제 로그</div><div class="msg muted">최근 200건</div><div class="table-wrap"><table><thead><tr><th>시간</th><th>사용자</th><th>동작</th><th>대상</th><th>상세</th></tr></thead><tbody>${logRows.length?logRows.map(r=>`<tr><td>${escapeHtml(r.created_at||'')}</td><td>${escapeHtml(r.actor_email||'')}</td><td>${escapeHtml(r.action||'')}</td><td>${escapeHtml(r.target_type||'')} / ${escapeHtml(r.target_id||'')}</td><td>${escapeHtml(r.details||'')}</td></tr>`).join(''):`<tr><td colspan="5">로그가 없습니다.</td></tr>`}</tbody></table></div></div></div>`:''}
+</div>
+
+<div class="tab-panel ${currentTab==='adminPanel'?'active':''}'>
+<div class="admin-panel-grid">
+  <div class="card admin-card"><div class="section-title">👥 관리자 기능</div><div class="msg muted">권한 변경 및 사용자별 결재 사인 이미지 등록</div><div class="table-wrap"><table><thead><tr><th>이메일</th><th>현재 권한</th><th>권한 변경</th><th>사인 업로드</th><th>사인 미리보기</th></tr></thead><tbody>${userRows.map(u=>`<tr><td>${escapeHtml(u.email)}</td><td>${roleBadge(u.role)}</td><td><div style="display:flex;gap:8px;align-items:center;min-width:260px;"><select id="role-${escapeId(u.email)}" class="select" style="margin:0;min-width:140px;"><option value="user" ${u.role==='user'?'selected':''}>사용자</option><option value="operator" ${u.role==='operator'?'selected':''}>운영자</option><option value="supervisor" ${u.role==='supervisor'?'selected':''}>Supervisor</option><option value="admin" ${u.role==='admin'?'selected':''}>관리자</option></select><button class="small-btn" onclick="changeRole('${u.email}')">변경</button></div></td><td><input type="file" accept="image/*" onchange="uploadSignatureForUser('${u.email}', this.files[0])"></td><td>${u.signature_url?`<img class="signature-preview" src="${u.signature_url}" alt="signature">`:'-'}</td></tr>`).join('')}</tbody></table></div></div>
+  <div class="card log-card"><div class="section-title">🕒 저장 / 삭제 로그</div><div class="msg muted">최근 200건</div><div class="table-wrap"><table><thead><tr><th>시간</th><th>사용자</th><th>동작</th><th>대상</th><th>상세</th></tr></thead><tbody>${logRows.length?logRows.map(r=>`<tr><td>${escapeHtml(r.created_at||'')}</td><td>${escapeHtml(r.actor_email||'')}</td><td>${escapeHtml(r.action||'')}</td><td>${escapeHtml(r.target_type||'')} / ${escapeHtml(r.target_id||'')}</td><td>${escapeHtml(r.details||'')}</td></tr>`).join(''):`<tr><td colspan="5">로그가 없습니다.</td></tr>`}</tbody></table></div></div>
+</div>
 </div>
 
 <div class="tab-panel ${currentTab==='reference'?'active':''}">
