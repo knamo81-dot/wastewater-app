@@ -154,7 +154,7 @@ function getTodayGuidelineText(totalCm){return totalCm>CM_LIMIT?`OVER ${CM_LIMIT
 function canWrite(){return currentRole==='admin'||currentRole==='operator';}
 function canDelete(){return currentRole==='admin'||currentRole==='operator';}
 function canAdmin(){return currentRole==='admin';}
-function canDownload(){return currentRole==='admin'||currentRole==='operator';}
+function canDownload(){return currentRole==='admin'||currentRole==='operator'||currentRole==='supervisor';}
 function canWriterApprove(){return currentRole==='admin'||currentRole==='operator';}
 function canReviewerApprove(){return currentRole==='admin'||currentRole==='supervisor';}
 function monthKeyFromDate(v){return String(v||'').slice(0,7);}
@@ -290,13 +290,21 @@ function getDerivedStats(){const ordered=[...dailyRows].sort((a,b)=>new Date(a.d
 function getMonthlyReportData(monthKey){const stats=getDerivedStats(); const ledgerRows=[...stats.enrichedDaily].filter(r=>monthKeyFromDate(r.date)===monthKey).sort((a,b)=>String(a.date).localeCompare(String(b.date))); const pickupMonthRows=[...pickupRows].filter(r=>monthKeyFromDate(r.pickup_date)===monthKey).sort((a,b)=>String(a.pickup_date).localeCompare(String(b.pickup_date))); const wastewaterRows=pickupMonthRows.filter(r=>(r.pickup_type||'폐수')==='폐수'); const wasteRows=pickupMonthRows.filter(r=>(r.pickup_type||'폐수')==='폐기물'); const totalWaterUse=round2(ledgerRows.reduce((s,r)=>s+safeNumber(r.water_used),0)); const totalEntrusted=round2(wastewaterRows.reduce((s,r)=>s+safeNumber(r.entrusted_amount),0)); const overRows=ledgerRows.filter(r=>safeNumber(r.total_cm)>CM_LIMIT); const maxHeight=ledgerRows.length?Math.max(...ledgerRows.map(r=>safeNumber(r.total_cm))):0; const externalCount=ledgerRows.filter(r=>!!r.has_external).length; const wasteCounts=summarizeWasteCounts(wasteRows); const approval=getApprovalRow(monthKey); return {monthKey,monthLabel:formatMonthLabel(monthKey),ledgerRows,pickupMonthRows,wastewaterRows,wasteRows,totalWaterUse,totalEntrusted,overRows,overCount:overRows.length,maxHeight,externalCount,wasteCounts,wastewaterPickupCount:wastewaterRows.length,wastePickupCount:wasteRows.length,approval};}
 function getYearlyReportData(year){const stats=getDerivedStats(); const yearLedgerRows=stats.enrichedDaily.filter(r=>yearKeyFromDate(r.date)===year); const yearPickupRows=pickupRows.filter(r=>yearKeyFromDate(r.pickup_date)===year); const monthlyMap={}; for(let m=1;m<=12;m++){const mm=String(m).padStart(2,'0'); monthlyMap[`${year}-${mm}`]={monthKey:`${year}-${mm}`,label:`${m}월`,waterUse:0,entrusted:0,overCount:0,wasteAlkali:0,wasteAcid:0,wasteOrganicSolid:0,wasteOrganicBottle:0};} yearLedgerRows.forEach(r=>{const mk=monthKeyFromDate(r.date); if(!monthlyMap[mk]) return; monthlyMap[mk].waterUse+=safeNumber(r.water_used); if(safeNumber(r.total_cm)>CM_LIMIT) monthlyMap[mk].overCount+=1;}); yearPickupRows.forEach(r=>{const mk=monthKeyFromDate(r.pickup_date); if(!monthlyMap[mk]) return; const type=r.pickup_type||'폐수'; if(type==='폐수') monthlyMap[mk].entrusted+=safeNumber(r.entrusted_amount); else {monthlyMap[mk].wasteAlkali+=safeNumber(r.waste_alkali_count);monthlyMap[mk].wasteAcid+=safeNumber(r.waste_acid_count);monthlyMap[mk].wasteOrganicSolid+=safeNumber(r.waste_organic_solid_count);monthlyMap[mk].wasteOrganicBottle+=safeNumber(r.waste_organic_bottle_count);} }); const monthlyRows=Object.values(monthlyMap).map(r=>({...r,waterUse:round2(r.waterUse),entrusted:round2(r.entrusted)})); const totalWaterUse=round2(monthlyRows.reduce((s,r)=>s+safeNumber(r.waterUse),0)); const totalEntrusted=round2(monthlyRows.reduce((s,r)=>s+safeNumber(r.entrusted),0)); const totalOverCount=monthlyRows.reduce((s,r)=>s+safeNumber(r.overCount),0); const wasteTotals=monthlyRows.reduce((a,r)=>{a.alkali+=safeNumber(r.wasteAlkali);a.acid+=safeNumber(r.wasteAcid);a.organicSolid+=safeNumber(r.wasteOrganicSolid);a.organicBottle+=safeNumber(r.wasteOrganicBottle);return a;},{alkali:0,acid:0,organicSolid:0,organicBottle:0}); return {year,monthlyRows,totalWaterUse,totalEntrusted,totalOverCount,wasteTotals,topOverMonth:[...monthlyRows].sort((a,b)=>b.overCount-a.overCount)[0],topWaterMonth:[...monthlyRows].sort((a,b)=>b.waterUse-a.waterUse)[0],topEntrustedMonth:[...monthlyRows].sort((a,b)=>b.entrusted-a.entrusted)[0]};}
 
-function renderPickupRows(rows){if(!rows.length)return `<tr><td colspan="7">선택한 조건의 수거 내역이 없습니다.</td></tr>`; return rows.map(row=>`<tr><td>${escapeHtml(row.pickup_date)}</td><td>${getPickupTypeBadge(row.pickup_type||'폐수')}</td><td>${escapeHtml(getPickupDetailText(row))}</td><td>${escapeHtml(row.certificate_no||'')}</td><td>${escapeHtml(row.contractor||'')}</td><td>${escapeHtml(row.note||'')}</td><td>${canDelete()?`<button class="small-btn danger" onclick="deletePickupRow(${row.id})">삭제</button>`:'-'}</td></tr>`).join('');}
-function renderLedgerRows(rows){const sorted=[...rows].sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.created_at||'').localeCompare(String(a.created_at||''))); if(!sorted.length) return `<tr><td colspan="12">운영일지 데이터가 없습니다.</td></tr>`; return sorted.map(row=>`<tr><td>${escapeHtml(row.date)}</td><td>${formatNum(row.water_prev,2)}</td><td>${formatNum(row.usage,2)}</td><td>${formatNum(row.water_used,2)}</td><td>${formatNum(row.height,1)} cm</td><td>${row.has_external?`${formatNum(row.external_ton||0,1)}T / ${formatNum(row.external_cm,1)}cm`:'-'}</td><td>${formatNum(row.total_cm,1)} cm</td><td>${escapeHtml(row.guideline_text)}</td><td>${escapeHtml(row.generated_text)}</td><td>${row.pickup?`위탁 ${formatNum(row.pickup.entrusted_amount,2)}m³<br>후높이 ${escapeHtml(String(row.pickup.after_pickup_cm??'-'))}cm`:'-'}</td><td>${escapeHtml(row.note||'')}</td><td>${canDelete()?`<button class="small-btn danger" onclick="deleteDailyRow(${row.id})">삭제</button>`:'-'}</td></tr>`).join('');}
+function renderPickupRows(rows){if(!rows.length)return `<tr><td colspan="7">선택한 조건의 수거 내역이 없습니다.</td></tr>`; return rows.map(row=>`<tr><td>${escapeHtml(row.pickup_date)}</td><td>${getPickupTypeBadge(row.pickup_type||'폐수')}</td><td>${escapeHtml(getPickupDetailText(row))}</td><td>${escapeHtml(row.certificate_no||'')}</td><td>${escapeHtml(row.contractor||'')}</td><td>${escapeHtml(row.note||'')}</td><td>${canDelete()?`<button class="small-btn danger" onclick="deletePickupRow(${row.id})">완전삭제</button>`:'-'}</td></tr>`).join('');}
+function renderLedgerRows(rows){const sorted=[...rows].sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.created_at||'').localeCompare(String(a.created_at||''))); if(!sorted.length) return `<tr><td colspan="12">운영일지 데이터가 없습니다.</td></tr>`; return sorted.map(row=>`<tr><td>${escapeHtml(row.date)}</td><td>${formatNum(row.water_prev,2)}</td><td>${formatNum(row.usage,2)}</td><td>${formatNum(row.water_used,2)}</td><td>${formatNum(row.height,1)} cm</td><td>${row.has_external?`${formatNum(row.external_ton||0,1)}T / ${formatNum(row.external_cm,1)}cm`:'-'}</td><td>${formatNum(row.total_cm,1)} cm</td><td>${escapeHtml(row.guideline_text)}</td><td>${escapeHtml(row.generated_text)}</td><td>${row.pickup?`위탁 ${formatNum(row.pickup.entrusted_amount,2)}m³<br>후높이 ${escapeHtml(String(row.pickup.after_pickup_cm??'-'))}cm`:'-'}</td><td>${escapeHtml(row.note||'')}</td><td>${canDelete()?`<button class="small-btn danger" onclick="deleteDailyRow(${row.id})">완전삭제</button>`:'-'}</td></tr>`).join('');}
 function getReferenceDoc(){
   const dbDoc = referenceDocs.find(d=>d.doc_key===refTab);
   if(dbDoc) return dbDoc;
-  const fallbackMap = getDefaultReferenceMap();
-  return fallbackMap[refTab] || fallbackMap.facilities;
+
+  const defaultMeta = DEFAULT_REFERENCE_DOCS[refTab] || {title:'', source:''};
+  return {
+    doc_key: refTab,
+    title: defaultMeta.title || '',
+    body: '',
+    source: '',
+    updated_at: null,
+    updated_by: null
+  };
 }
 
 
@@ -497,19 +505,34 @@ async function saveReferenceDoc(){
   await loadAll('운영 관련자료 저장 완료','ok');
 }
 
+async function deleteReferenceDoc(){
+  if(!canAdmin()) return renderApp('관리자만 운영 관련자료를 삭제할 수 있습니다.','err');
+  const existing = referenceDocs.find(d=>d.doc_key===refTab);
+  if(!existing?.id){
+    return renderApp('삭제할 사용자 작성 문서가 없습니다. 현재 문서는 기본 빈 문서 상태입니다.','err');
+  }
+  const ok = confirm('현재 운영 관련자료 문서를 삭제하고 빈 기본 상태로 되돌릴까요?');
+  if(!ok) return;
+  const result = await sb.from(REFERENCE_TABLE).delete().eq('id', existing.id);
+  if(result.error) return renderApp('운영 관련자료 삭제 실패: ' + result.error.message,'err');
+  await logActivity('delete','reference_doc',refTab,{title:existing.title||'', deleted_id:existing.id});
+  await loadAll('운영 관련자료 삭제 완료. 빈 기본 상태로 복원되었습니다.','ok');
+}
+
 function renderReferenceContent(){
   const doc = getReferenceDoc();
   const title = doc.title || '';
   const body = doc.body || '';
-  const sourceText = doc.source || '웹앱 문서';
+  const sourceText = doc.source || '';
   const updatedText = doc.updated_at ? new Date(doc.updated_at).toLocaleString('ko-KR') : '-';
   const updatedByText = doc.updated_by || '-';
+  const hasCustomDoc = !!referenceDocs.find(d=>d.doc_key===refTab)?.id;
   const docBodyHtml = renderDocBodyFromText(body);
 
   return `<div class="toolbar-row">
       <div>
         <div class="section-title">📚 폐수배출시설 운영 관련자료</div>
-        <div class="doc-meta-top">${escapeHtml(title)} / 원본: ${escapeHtml(sourceText)}</div>
+        <div class="doc-meta-top">${escapeHtml(title)} / 원본: ${escapeHtml(sourceText || '빈 기본 상태')}</div>
       </div>
       <div class="toolbar-right">
         <input class="input search-input" placeholder="키워드 검색" value="${escapeHtml(refSearch)}" oninput="changeRefSearch(this.value)">
@@ -576,6 +599,7 @@ function renderReferenceContent(){
               <div class="doc-meta-top">최종 수정: ${escapeHtml(updatedText)} / 수정자: ${escapeHtml(updatedByText)}</div>
               <div class="toolbar-right">
                 <button class="btn primary" onclick="saveReferenceDoc()">문서 저장</button>
+                <button class="btn danger" onclick="deleteReferenceDoc()" ${hasCustomDoc ? '' : 'disabled'}>${hasCustomDoc ? '문서 삭제' : '삭제 없음'}</button>
               </div>
             </div>
           </div>`:''}
@@ -710,7 +734,7 @@ ${canWrite()?`<button class="btn primary block" onclick="savePickupRow()">💾 �
               <td>${approvalBadge(u.approved)}</td>
               <td>${roleBadge(u.role||'user')}</td>
               <td><button class="small-btn" onclick="approveUser('${u.email}')">승인</button></td>
-              <td><button class="small-btn danger" onclick="deleteUser('${u.email}')">삭제</button></td>
+              <td><button class="small-btn danger" onclick="deleteUser('${u.email}')">완전삭제</button></td>
             </tr>`).join(''):`<tr><td colspan="5">승인 대기 계정이 없습니다.</td></tr>`}
           </tbody>
         </table>
@@ -751,7 +775,7 @@ ${canWrite()?`<button class="btn primary block" onclick="savePickupRow()">💾 �
               </td>
               <td><input type="file" accept="image/*" onchange="uploadSignatureForUser('${u.email}', this.files[0])"></td>
               <td>${u.signature_url?`<img class="signature-preview" src="${u.signature_url}" alt="signature">`:'-'}</td>
-              <td><button class="small-btn danger" onclick="deleteUser('${u.email}')">삭제</button></td>
+              <td><button class="small-btn danger" onclick="deleteUser('${u.email}')">완전삭제</button></td>
             </tr>`).join(''):`<tr><td colspan="7">승인 완료 계정이 없습니다.</td></tr>`}
           </tbody>
         </table>
@@ -865,7 +889,43 @@ async function unsignReviewer(monthKey){if(!canReviewerApprove()) return renderA
 async function resetApproval(monthKey){if(currentRole!=='admin') return renderApp('관리자만 전체 취소 가능합니다.','err'); if(!confirm(`${monthKey} 결재를 전체 취소하시겠습니까?`)) return; const {error}=await sb.from(APPROVAL_TABLE).update({writer_email:null,writer_signed_at:null,reviewer_email:null,reviewer_signed_at:null,is_locked:false}).eq('month_key',monthKey); if(error) return renderApp('전체 취소 실패: '+error.message,'err'); await logApprovalAction(monthKey,'admin_reset'); await loadAll('결재 전체 취소 완료','ok');}
 async function changeRole(email){if(!canAdmin()) return renderApp('관리자만 권한 변경 가능합니다.','err'); const newRole=document.getElementById(`role-${escapeId(email)}`).value; const {error}=await sb.from(USERS_TABLE).update({role:newRole}).eq('email',email); if(error) return renderApp('권한 변경 실패: '+error.message,'err'); await logActivity('role_change','user',email,{newRole}); await loadAll('권한 변경 완료','ok');}
 async function approveUser(email){if(!canAdmin()) return renderApp('관리자만 승인 가능합니다.','err'); const ok=confirm(`${email} 계정을 승인하시겠습니까?`); if(!ok) return; const {error}=await sb.from(USERS_TABLE).update({approved:true}).eq('email',email); if(error) return renderApp('계정 승인 실패: '+error.message,'err'); await logActivity('approve_user','user',email,{approved:true}); await loadAll('계정 승인 완료','ok');}
-async function deleteUser(email){if(!canAdmin()) return renderApp('관리자만 계정 삭제 가능합니다.','err'); if(email===user?.email) return renderApp('현재 로그인한 본인 계정은 삭제할 수 없습니다.','err'); const ok=confirm(`${email} 계정을 삭제하시겠습니까?\n\n앱 사용자 목록에서 제거되며, 이후 로그인도 차단됩니다.`); if(!ok) return; const {error}=await sb.from(USERS_TABLE).delete().eq('email',email); if(error) return renderApp('계정 삭제 실패: '+error.message,'err'); await logActivity('delete_user','user',email,{}); await loadAll('계정 삭제 완료','ok');}
+async function deleteUser(email){
+  if(!canAdmin()) return renderApp('관리자만 계정 삭제 가능합니다.','err');
+  if(email===user?.email) return renderApp('현재 로그인한 본인 계정은 삭제할 수 없습니다.','err');
+
+  const ok=confirm(`${email} 계정을 완전삭제하시겠습니까?
+
+users 테이블과 인증 계정(auth)까지 함께 삭제되어 이후 같은 이메일로 재가입할 수 있습니다.`);
+  if(!ok) return;
+
+  const {data:sessionData}=await sb.auth.getSession();
+  const accessToken=sessionData?.session?.access_token;
+  if(!accessToken) return renderApp('현재 로그인 세션이 만료되었습니다. 다시 로그인 후 시도해주세요.','err');
+
+  try{
+    const res=await fetch(`${SUPABASE_URL}/functions/v1/admin-delete-user`,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${accessToken}`
+      },
+      body:JSON.stringify({email})
+    });
+
+    const raw=await res.text();
+    let payload={};
+    try{ payload=raw?JSON.parse(raw):{}; }catch(_){ payload={raw}; }
+
+    if(!res.ok){
+      return renderApp('계정 완전삭제 실패: '+(payload?.error||payload?.message||res.statusText),'err');
+    }
+
+    await logActivity('delete_user_full','user',email,payload||{});
+    await loadAll('계정 완전삭제 완료. 같은 이메일로 재가입할 수 있습니다.','ok');
+  }catch(e){
+    return renderApp('계정 완전삭제 중 오류 발생: '+(e?.message||e),'err');
+  }
+}
 async function uploadSignatureForUser(email,file){if(!canAdmin()) return renderApp('관리자만 사인 업로드 가능합니다.','err'); if(!file) return; if(file.size>700*1024) return renderApp('사인 이미지는 700KB 이하 권장입니다.','err'); const reader=new FileReader(); reader.onload=async ()=>{const dataUrl=reader.result; const {error}=await sb.from(USERS_TABLE).update({signature_url:dataUrl}).eq('email',email); if(error) return renderApp('사인 업로드 실패: '+error.message,'err'); await logActivity('upload_signature','user',email,{size:file.size}); await loadAll('사인 업로드 완료','ok');}; reader.readAsDataURL(file);}
 async function transferAdmin(targetEmail){if(!canAdmin()) return renderApp('관리자만 양도 가능합니다.','err'); if(!confirm(`${targetEmail} 에게 관리자 권한을 양도하시겠습니까?`)) return; const demote=await sb.from(USERS_TABLE).update({role:'operator'}).eq('email',user.email); if(demote.error) return renderApp('현재 관리자 권한 변경 실패: '+demote.error.message,'err'); const promote=await sb.from(USERS_TABLE).update({role:'admin'}).eq('email',targetEmail); if(promote.error) return renderApp('관리자 양도 실패: '+promote.error.message,'err'); await logActivity('transfer_admin','user',targetEmail,{from:user.email,to:targetEmail}); await loadMyRole(); await loadAll('관리자 양도 완료','ok');}
 function escapeId(email){return email.replace(/[^a-zA-Z0-9]/g,'_');}
