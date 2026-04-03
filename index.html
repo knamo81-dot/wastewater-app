@@ -133,7 +133,7 @@ function formatNum(v,d=2){if(v===null||v===undefined||v===''||Number.isNaN(Numbe
 function roleLabel(role){
   if(role==='user') return '사용자';
   if(role==='operator') return '운영자';
-  if(role==='supervisor') return 'Supervisor';
+  if(role==='supervisor') return '책임자';
   if(role==='admin') return '관리자';
   return role;
 }
@@ -586,7 +586,7 @@ ${canWrite()?`<button class="btn primary block" onclick="savePickupRow()">💾 �
                   <select id="role-${escapeId(u.email)}" class="select" style="margin:0;min-width:140px;">
                     <option value="user" ${u.role==='user'?'selected':''}>사용자</option>
                     <option value="operator" ${u.role==='operator'?'selected':''}>운영자</option>
-                    <option value="supervisor" ${u.role==='supervisor'?'selected':''}>Supervisor</option>
+                    <option value="supervisor" ${u.role==='supervisor'?'selected':''}>책임자</option>
                     <option value="admin" ${u.role==='admin'?'selected':''}>관리자</option>
                   </select>
                   <button class="small-btn" onclick="changeRole('${u.email}')">변경</button>
