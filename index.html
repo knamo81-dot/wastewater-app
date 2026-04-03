@@ -85,9 +85,10 @@ table{width:100%;border-collapse:collapse;min-width:1100px;background:#fff} th,t
 .ledger-approval-box{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end}
 .btn.approval-on{background:var(--navy);color:#fff;border-color:var(--navy)}
 
+.tabs-wrap{display:flex;align-items:center;gap:12px;margin-bottom:18px}
 .tabs-main{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;flex:1}
-.tabs-wrap{display:flex;gap:12px;align-items:center;margin-bottom:18px}
 .admin-mini-btn{padding:10px 14px;font-size:13px;border-radius:14px;white-space:nowrap}
+.admin-mini-btn.active{background:#fff;color:var(--navy);box-shadow:var(--shadow);font-weight:800}
 .admin-panel-grid{display:grid;grid-template-columns:1fr;gap:18px}
 
 
@@ -124,7 +125,7 @@ function formatNum(v,d=2){if(v===null||v===undefined||v===''||Number.isNaN(Numbe
 function roleLabel(role){
   if(role==='user') return '사용자';
   if(role==='operator') return '운영자';
-  if(role==='supervisor') return '책임자';
+  if(role==='supervisor') return 'Supervisor';
   if(role==='admin') return '관리자';
   return role;
 }
@@ -389,7 +390,7 @@ document.getElementById('app').innerHTML=`<div class="app-shell">
     <button class="tab-btn ${currentTab==='ledger'?'active':''}" onclick="switchTab('ledger')">운영일지</button>
     <button class="tab-btn ${currentTab==='reference'?'active':''}" onclick="switchTab('reference')">운영 관련자료</button>
   </div>
-  ${canAdmin()?`<button class="btn soft admin-mini-btn" onclick="switchTab('adminPanel')">관리자기능</button>`:''}
+  ${canAdmin()?`<button class="btn soft admin-mini-btn ${currentTab==='adminPanel'?'active':''}" onclick="switchTab('adminPanel')">관리자기능</button>`:''}
 </div>
 
 <div class="tab-panel ${currentTab==='daily'?'active':''}">
@@ -467,11 +468,73 @@ ${canWrite()?`<button class="btn primary block" onclick="savePickupRow()">💾 �
 
 </div>
 
-<div class="tab-panel ${currentTab==='adminPanel'?'active':''}'>
-<div class="admin-panel-grid">
-  <div class="card admin-card"><div class="section-title">👥 관리자 기능</div><div class="msg muted">권한 변경 및 사용자별 결재 사인 이미지 등록</div><div class="table-wrap"><table><thead><tr><th>이메일</th><th>현재 권한</th><th>권한 변경</th><th>사인 업로드</th><th>사인 미리보기</th></tr></thead><tbody>${userRows.map(u=>`<tr><td>${escapeHtml(u.email)}</td><td>${roleBadge(u.role)}</td><td><div style="display:flex;gap:8px;align-items:center;min-width:260px;"><select id="role-${escapeId(u.email)}" class="select" style="margin:0;min-width:140px;"><option value="user" ${u.role==='user'?'selected':''}>사용자</option><option value="operator" ${u.role==='operator'?'selected':''}>운영자</option><option value="supervisor" ${u.role==='supervisor'?'selected':''}>Supervisor</option><option value="admin" ${u.role==='admin'?'selected':''}>관리자</option></select><button class="small-btn" onclick="changeRole('${u.email}')">변경</button></div></td><td><input type="file" accept="image/*" onchange="uploadSignatureForUser('${u.email}', this.files[0])"></td><td>${u.signature_url?`<img class="signature-preview" src="${u.signature_url}" alt="signature">`:'-'}</td></tr>`).join('')}</tbody></table></div></div>
-  <div class="card log-card"><div class="section-title">🕒 저장 / 삭제 로그</div><div class="msg muted">최근 200건</div><div class="table-wrap"><table><thead><tr><th>시간</th><th>사용자</th><th>동작</th><th>대상</th><th>상세</th></tr></thead><tbody>${logRows.length?logRows.map(r=>`<tr><td>${escapeHtml(r.created_at||'')}</td><td>${escapeHtml(r.actor_email||'')}</td><td>${escapeHtml(r.action||'')}</td><td>${escapeHtml(r.target_type||'')} / ${escapeHtml(r.target_id||'')}</td><td>${escapeHtml(r.details||'')}</td></tr>`).join(''):`<tr><td colspan="5">로그가 없습니다.</td></tr>`}</tbody></table></div></div>
-</div>
+
+<div class="tab-panel ${currentTab==='adminPanel'?'active':''}">
+  <div class="admin-panel-grid">
+    <div class="card admin-card">
+      <div class="section-title">👥 관리자 기능</div>
+      <div class="msg muted">권한 변경 및 사용자별 결재 사인 이미지 등록</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>이메일</th>
+              <th>현재 권한</th>
+              <th>권한 변경</th>
+              <th>사인 업로드</th>
+              <th>사인 미리보기</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${userRows.map(u=>`<tr>
+              <td>${escapeHtml(u.email)}</td>
+              <td>${roleBadge(u.role)}</td>
+              <td>
+                <div style="display:flex;gap:8px;align-items:center;min-width:260px;">
+                  <select id="role-${escapeId(u.email)}" class="select" style="margin:0;min-width:140px;">
+                    <option value="user" ${u.role==='user'?'selected':''}>사용자</option>
+                    <option value="operator" ${u.role==='operator'?'selected':''}>운영자</option>
+                    <option value="supervisor" ${u.role==='supervisor'?'selected':''}>Supervisor</option>
+                    <option value="admin" ${u.role==='admin'?'selected':''}>관리자</option>
+                  </select>
+                  <button class="small-btn" onclick="changeRole('${u.email}')">변경</button>
+                </div>
+              </td>
+              <td><input type="file" accept="image/*" onchange="uploadSignatureForUser('${u.email}', this.files[0])"></td>
+              <td>${u.signature_url?`<img class="signature-preview" src="${u.signature_url}" alt="signature">`:'-'}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card log-card">
+      <div class="section-title">🕒 저장 / 삭제 로그</div>
+      <div class="msg muted">최근 200건</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>시간</th>
+              <th>사용자</th>
+              <th>동작</th>
+              <th>대상</th>
+              <th>상세</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${logRows.length?logRows.map(r=>`<tr>
+              <td>${escapeHtml(r.created_at||'')}</td>
+              <td>${escapeHtml(r.actor_email||'')}</td>
+              <td>${escapeHtml(r.action||'')}</td>
+              <td>${escapeHtml(r.target_type||'')} / ${escapeHtml(r.target_id||'')}</td>
+              <td>${escapeHtml(r.details||'')}</td>
+            </tr>`).join(''):`<tr><td colspan="5">로그가 없습니다.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="tab-panel ${currentTab==='reference'?'active':''}">
