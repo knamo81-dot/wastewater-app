@@ -1052,12 +1052,14 @@ function makeBarChartSvg({ title, labels, values, unit = '', color = '#2f6fed', 
     `;
   }).join('');
 
-  const legend = series.map((s, idx) => `
-    <div style="display:flex;align-items:center;gap:6px;font-size:12px;color:#475467;">
-      <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${colors[idx]};"></span>
-      <span>${escapeHtml(s.name)}</span>
-    </div>
-  `).join('');
+const legend = series.map((s, idx) => `
+  <div style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#475467;margin-right:14px;">
+    <svg width="10" height="10" viewBox="0 0 10 10" style="display:block;">
+      <rect x="0" y="0" width="10" height="10" rx="2" fill="${colors[idx]}" stroke="${colors[idx]}"></rect>
+    </svg>
+    <span>${escapeHtml(s.name)}</span>
+  </div>
+`).join('');
 
   return `
     <div style="margin-bottom:18px;">
@@ -2112,9 +2114,15 @@ function buildYearlyReportHtml(year) {
           <div class="section">${overChart}</div>
           <div class="section">${wasteTotalChart}</div>
           <div class="section">${wasteMonthlyStackedChart}</div>
+        </div>
+
+        <div class="page">
+          <div class="header">
+            <div class="title">월별 요약표</div>
+            <div class="sub">${escapeHtml(year)}년 기준</div>
+          </div>
 
           <div class="section">
-            <div class="section-title">월별 요약표</div>
             <table>
               <thead>
                 <tr>
