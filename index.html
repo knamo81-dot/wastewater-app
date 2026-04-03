@@ -664,7 +664,36 @@ async function toggleReviewerApproval(monthKey){
   }
   return signReviewer(monthKey);
 }
+async function signWriter(monthKey){
+  if(!canWriterApprove()) return renderApp('작성자 결재 권한이 없습니다.','err');
 
+  const row = getApprovalRow(monthKey);
+  if(row?.writer_signed_at) return renderApp('이미 작성자 결재가 완료된 월입니다.','err');
+
+  const payload = {
+    month_key: monthKey,
+    writer_email: user.email,
+    writer_signed_at: new Date().toISOString(),
+    is_locked: false
+  };
+
+  let result;
+  if(row){
+    result = await sb.from(APPROVAL_TABLE).update(payload).eq('month_key', monthKey);
+  }else{
+    result = await sb.from(APPROVAL_TABLE).insert([payload]);
+  }
+
+  if(result.error) return renderApp('작성자 결재 실패: ' + result.error.message, 'err');
+
+  await logApprovalAction(monthKey,'writer_sign');
+
+  // 👇 이 줄 중요
+  await loadAll('작성자 결재 완료','ok');
+
+  // 🚀 이 줄 추가 (핵심)
+  await sendApprovalMail(monthKey);
+}
 async function signWriter(monthKey){if(!canWriterApprove()) return renderApp('작성자 결재 권한이 없습니다.','err'); const row=getApprovalRow(monthKey); if(row?.writer_signed_at) return renderApp('이미 작성자 결재가 완료된 월입니다.','err'); const payload={month_key:monthKey,writer_email:user.email,writer_signed_at:new Date().toISOString(),is_locked:false}; let result; if(row) result=await sb.from(APPROVAL_TABLE).update(payload).eq('month_key',monthKey); else result=await sb.from(APPROVAL_TABLE).insert([payload]); if(result.error) return renderApp('작성자 결재 실패: '+result.error.message,'err'); await logApprovalAction(monthKey,'writer_sign'); await loadAll('작성자 결재 완료','ok'); await sendApprovalMail(monthKey);}
 async function unsignWriter(monthKey){if(!canWriterApprove()) return renderApp('작성자 결재 취소 권한이 없습니다.','err'); const row=getApprovalRow(monthKey); if(!row?.writer_signed_at) return renderApp('작성자 결재 정보가 없습니다.','err'); if(row?.reviewer_signed_at) return renderApp('검토자 결재를 먼저 취소해야 합니다.','err'); const {error}=await sb.from(APPROVAL_TABLE).update({writer_email:null,writer_signed_at:null,is_locked:false}).eq('month_key',monthKey); if(error) return renderApp('작성자 결재 취소 실패: '+error.message,'err'); await logApprovalAction(monthKey,'writer_unsign'); await loadAll('작성자 결재 취소 완료','ok');}
 async function signReviewer(monthKey){if(!canReviewerApprove()) return renderApp('검토자 결재 권한이 없습니다.','err'); const row=getApprovalRow(monthKey); if(!row?.writer_signed_at) return renderApp('작성자 결재가 먼저 필요합니다.','err'); if(row?.reviewer_signed_at) return renderApp('이미 검토자 결재가 완료된 월입니다.','err'); const {error}=await sb.from(APPROVAL_TABLE).update({reviewer_email:user.email,reviewer_signed_at:new Date().toISOString(),is_locked:true}).eq('month_key',monthKey); if(error) return renderApp('검토자 결재 실패: '+error.message,'err'); await logApprovalAction(monthKey,'reviewer_sign'); await loadAll('검토자 결재 완료 / 월 잠금','ok');}
