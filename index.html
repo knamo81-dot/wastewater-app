@@ -154,7 +154,7 @@ function getTodayGuidelineText(totalCm){return totalCm>CM_LIMIT?`OVER ${CM_LIMIT
 function canWrite(){return currentRole==='admin'||currentRole==='operator';}
 function canDelete(){return currentRole==='admin'||currentRole==='operator';}
 function canAdmin(){return currentRole==='admin';}
-function canDownload(){return currentRole==='admin'||currentRole==='operator';}
+function canDownload(){return currentRole==='admin'||currentRole==='operator'||currentRole==='supervisor';}
 function canWriterApprove(){return currentRole==='admin'||currentRole==='operator';}
 function canReviewerApprove(){return currentRole==='admin'||currentRole==='supervisor';}
 function monthKeyFromDate(v){return String(v||'').slice(0,7);}
@@ -295,8 +295,16 @@ function renderLedgerRows(rows){const sorted=[...rows].sort((a,b)=>String(b.date
 function getReferenceDoc(){
   const dbDoc = referenceDocs.find(d=>d.doc_key===refTab);
   if(dbDoc) return dbDoc;
-  const fallbackMap = getDefaultReferenceMap();
-  return fallbackMap[refTab] || fallbackMap.facilities;
+
+  const defaultMeta = DEFAULT_REFERENCE_DOCS[refTab] || {title:'', source:''};
+  return {
+    doc_key: refTab,
+    title: defaultMeta.title || '',
+    body: '',
+    source: '',
+    updated_at: null,
+    updated_by: null
+  };
 }
 
 
@@ -497,19 +505,34 @@ async function saveReferenceDoc(){
   await loadAll('운영 관련자료 저장 완료','ok');
 }
 
+async function deleteReferenceDoc(){
+  if(!canAdmin()) return renderApp('관리자만 운영 관련자료를 삭제할 수 있습니다.','err');
+  const existing = referenceDocs.find(d=>d.doc_key===refTab);
+  if(!existing?.id){
+    return renderApp('삭제할 사용자 작성 문서가 없습니다. 현재 문서는 기본 빈 문서 상태입니다.','err');
+  }
+  const ok = confirm('현재 운영 관련자료 문서를 삭제하고 빈 기본 상태로 되돌릴까요?');
+  if(!ok) return;
+  const result = await sb.from(REFERENCE_TABLE).delete().eq('id', existing.id);
+  if(result.error) return renderApp('운영 관련자료 삭제 실패: ' + result.error.message,'err');
+  await logActivity('delete','reference_doc',refTab,{title:existing.title||'', deleted_id:existing.id});
+  await loadAll('운영 관련자료 삭제 완료. 빈 기본 상태로 복원되었습니다.','ok');
+}
+
 function renderReferenceContent(){
   const doc = getReferenceDoc();
   const title = doc.title || '';
   const body = doc.body || '';
-  const sourceText = doc.source || '웹앱 문서';
+  const sourceText = doc.source || '';
   const updatedText = doc.updated_at ? new Date(doc.updated_at).toLocaleString('ko-KR') : '-';
   const updatedByText = doc.updated_by || '-';
+  const hasCustomDoc = !!referenceDocs.find(d=>d.doc_key===refTab)?.id;
   const docBodyHtml = renderDocBodyFromText(body);
 
   return `<div class="toolbar-row">
       <div>
         <div class="section-title">📚 폐수배출시설 운영 관련자료</div>
-        <div class="doc-meta-top">${escapeHtml(title)} / 원본: ${escapeHtml(sourceText)}</div>
+        <div class="doc-meta-top">${escapeHtml(title)} / 원본: ${escapeHtml(sourceText || '빈 기본 상태')}</div>
       </div>
       <div class="toolbar-right">
         <input class="input search-input" placeholder="키워드 검색" value="${escapeHtml(refSearch)}" oninput="changeRefSearch(this.value)">
@@ -576,6 +599,7 @@ function renderReferenceContent(){
               <div class="doc-meta-top">최종 수정: ${escapeHtml(updatedText)} / 수정자: ${escapeHtml(updatedByText)}</div>
               <div class="toolbar-right">
                 <button class="btn primary" onclick="saveReferenceDoc()">문서 저장</button>
+                <button class="btn danger" onclick="deleteReferenceDoc()" ${hasCustomDoc ? '' : 'disabled'}>${hasCustomDoc ? '문서 삭제' : '삭제 없음'}</button>
               </div>
             </div>
           </div>`:''}
