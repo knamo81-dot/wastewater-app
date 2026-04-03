@@ -21,6 +21,7 @@ button,input,textarea,select{font:inherit} .app-shell{max-width:1560px;margin:0 
 .title-wrap .sub{margin-top:8px;color:var(--muted);font-size:15px}
 .top-actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
 .btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:999px;padding:11px 18px;cursor:pointer;font-weight:700}
+.btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)} .btn.danger{color:#b42318;border-color:#f3b4ad}
 .btn.block{width:100%;border-radius:14px} .btn.warn{border-color:#f7d3a1;color:#b54708}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
@@ -499,6 +500,21 @@ async function saveReferenceDoc(){
   await loadAll('운영 관련자료 저장 완료','ok');
 }
 
+async function deleteReferenceDoc(){
+  if(!canAdmin()) return renderApp('관리자만 운영 관련자료를 삭제할 수 있습니다.','err');
+  const existing = referenceDocs.find(d=>d.doc_key===refTab);
+  if(!existing?.id){
+    return renderApp('삭제할 사용자 작성 문서가 없습니다. 기본 내장 문서가 표시됩니다.','err');
+  }
+  const ok = confirm('현재 운영 관련자료 문서를 삭제하고 기본 문서로 되돌릴까요?');
+  if(!ok) return;
+  const result = await sb.from(REFERENCE_TABLE).delete().eq('id', existing.id);
+  if(result.error) return renderApp('운영 관련자료 삭제 실패: ' + result.error.message,'err');
+  await logActivity('delete','reference_doc',refTab,{title:existing.title||'', deleted_id:existing.id});
+  await loadAll('운영 관련자료 삭제 완료. 기본 문서로 복원되었습니다.','ok');
+}
+
+
 function renderReferenceContent(){
   const doc = getReferenceDoc();
   const title = doc.title || '';
@@ -506,6 +522,7 @@ function renderReferenceContent(){
   const sourceText = doc.source || '웹앱 문서';
   const updatedText = doc.updated_at ? new Date(doc.updated_at).toLocaleString('ko-KR') : '-';
   const updatedByText = doc.updated_by || '-';
+  const hasCustomDoc = !!referenceDocs.find(d=>d.doc_key===refTab)?.id;
   const docBodyHtml = renderDocBodyFromText(body);
 
   return `<div class="toolbar-row">
@@ -578,6 +595,7 @@ function renderReferenceContent(){
               <div class="doc-meta-top">최종 수정: ${escapeHtml(updatedText)} / 수정자: ${escapeHtml(updatedByText)}</div>
               <div class="toolbar-right">
                 <button class="btn primary" onclick="saveReferenceDoc()">문서 저장</button>
+                <button class="btn danger" onclick="deleteReferenceDoc()" ${hasCustomDoc ? '' : 'disabled'}>${hasCustomDoc ? '문서 삭제' : '삭제 없음'}</button>
               </div>
             </div>
           </div>`:''}
