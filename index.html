@@ -80,6 +80,11 @@ table{width:100%;border-collapse:collapse;min-width:1100px;background:#fff} th,t
 .doc-spacer{height:10px}
 .doc-empty{color:#667085;padding:8px 0}
 
+
+.ledger-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.ledger-approval-box{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:flex-end}
+.btn.approval-on{background:var(--navy);color:#fff;border-color:var(--navy)}
+
 @media (max-width:1100px){.stats{grid-template-columns:repeat(2,1fr)} .main-grid,.ref-layout{grid-template-columns:1fr} .preview-grid{grid-template-columns:repeat(2,1fr)} .two-col,.three-col{grid-template-columns:1fr}}
 @media (max-width:720px){.app-shell{padding:12px} .topbar{flex-direction:column} .title-wrap h1{font-size:24px} .stats,.tabs,.preview-grid{grid-template-columns:1fr} .form-card,.preview-card,.ledger-card,.admin-card,.log-card,.ref-card{padding:18px} table{min-width:860px} .form-chip-row{grid-template-columns:1fr}}
 </style>
@@ -428,16 +433,26 @@ ${canWrite()?`<button class="btn primary block" onclick="savePickupRow()">💾 �
 
 <div class="tab-panel ${currentTab==='ledger'?'active':''}">
 <div class="card ledger-card">
-<div class="toolbar-row"><div><div class="section-title">🧾 운영일지</div><div class="msg muted">검토자 결재 완료 시 해당월은 잠깁니다.</div></div>
-<div class="toolbar-right">
-<input id="ledger-month" class="input" type="month" value="${ledgerMonthFilter}" style="width:180px;margin:0" onchange="changeLedgerMonth(this.value)">
-<span class="inline-badge ${approvalStatus.cls}">${approvalStatus.text}</span>
-${canWriterApprove()?`<button class="btn soft" onclick="signWriter('${ledgerMonthFilter}')">작성자 결재</button><button class="btn soft" onclick="unsignWriter('${ledgerMonthFilter}')">작성자 취소</button>`:''}
-${canReviewerApprove()?`<button class="btn soft" onclick="signReviewer('${ledgerMonthFilter}')">검토자 결재</button><button class="btn soft" onclick="unsignReviewer('${ledgerMonthFilter}')">검토자 취소</button>`:''}
-${currentRole==='admin'?`<button class="btn danger" onclick="resetApproval('${ledgerMonthFilter}')">전체 취소</button>`:''}
-<select class="select" style="width:140px;margin:0" onchange="changeYearlyReportYear(this.value)">${availableYears.map(y=>`<option value="${y}" ${yearlyReportFilter===y?'selected':''}>${y}년</option>`).join('')}</select>
-${canDownload()?`<button class="btn soft" onclick="downloadMonthlyExcel()">월별 엑셀 다운로드</button><button class="btn soft" onclick="downloadMonthlyReportPdf()">월보고서 PDF</button><button class="btn soft" onclick="downloadYearlyReportPdf()">연보고서 PDF</button>`:''}
-</div></div>
+<div class="ledger-top">
+  <div>
+    <div class="section-title">🧾 운영일지</div>
+    <div class="msg muted">검토자 결재 완료 시 해당월은 잠깁니다.</div>
+  </div>
+  <div class="ledger-approval-box">
+    <span class="inline-badge ${approvalStatus.cls}">${approvalStatus.text}</span>
+    ${canWriterApprove()?`<button class="btn ${getApprovalRow(ledgerMonthFilter)?.writer_signed_at ? 'approval-on' : 'soft'}" onclick="toggleWriterApproval('${ledgerMonthFilter}')">${getApprovalRow(ledgerMonthFilter)?.writer_signed_at ? '작성자 결재완료' : '작성자 결재'}</button>`:''}
+    ${canReviewerApprove()?`<button class="btn ${getApprovalRow(ledgerMonthFilter)?.reviewer_signed_at ? 'approval-on' : 'soft'}" onclick="toggleReviewerApproval('${ledgerMonthFilter}')">${getApprovalRow(ledgerMonthFilter)?.reviewer_signed_at ? '검토자 결재완료' : '검토자 결재'}</button>`:''}
+  </div>
+</div>
+
+<div class="toolbar-row">
+  <div class="toolbar-right">
+    <input id="ledger-month" class="input" type="month" value="${ledgerMonthFilter}" style="width:180px;margin:0" onchange="changeLedgerMonth(this.value)">
+    <select class="select" style="width:140px;margin:0" onchange="changeYearlyReportYear(this.value)">${availableYears.map(y=>`<option value="${y}" ${yearlyReportFilter===y?'selected':''}>${y}년</option>`).join('')}</select>
+    ${canDownload()?`<button class="btn soft" onclick="downloadMonthlyExcel()">월별 엑셀 다운로드</button><button class="btn soft" onclick="downloadMonthlyReportPdf()">월보고서 PDF</button><button class="btn soft" onclick="downloadYearlyReportPdf()">연보고서 PDF</button>`:''}
+  </div>
+</div>
+
 <div class="table-wrap"><table><thead><tr><th>날짜</th><th>용수 전일</th><th>용수 금일</th><th>당일 사용량</th><th>저장고 높이</th><th>외부보관</th><th>계산용 총높이</th><th>금일지침</th><th>총 발생량</th><th>수거 정보</th><th>기타</th><th>삭제</th></tr></thead><tbody>${renderLedgerRows(filteredLedgerRows)}</tbody></table></div>
 </div>
 
@@ -473,6 +488,25 @@ async function savePickupRow(){if(!canWrite()) return renderApp('저장 권한�
 function clearPickupForm(){['pickup-date','pickup-cert','pickup-contractor','pickup-amount','pickup-after-cm','pickup-note','waste-alkali-count','waste-acid-count','waste-organic-solid-count','waste-organic-bottle-count'].forEach(id=>{const el=document.getElementById(id); if(!el) return; if(id.startsWith('waste-')) el.value='0'; else el.value='';}); const typeEl=document.getElementById('pickup-type'); if(typeEl) typeEl.value='폐수'; togglePickupType();}
 async function deleteDailyRow(id){if(!canDelete()) return renderApp('삭제 권한이 없습니다.','err'); const target=dailyRows.find(r=>r.id===id); if(target&&isMonthLocked(monthKeyFromDate(target.date))) return renderApp(`${monthKeyFromDate(target.date)}은(는) 검토 완료되어 삭제할 수 없습니다.`,'err'); if(!confirm('일일 입력 데이터를 삭제하시겠습니까?')) return; const {error}=await sb.from(DAILY_TABLE).delete().eq('id',id); if(error) return renderApp('일일 입력 삭제 실패: '+error.message,'err'); await logActivity('delete','daily',id,{}); await loadAll('일일 입력 삭제 완료','ok');}
 async function deletePickupRow(id){if(!canDelete()) return renderApp('삭제 권한이 없습니다.','err'); const target=pickupRows.find(r=>r.id===id); if(target&&isMonthLocked(monthKeyFromDate(target.pickup_date))) return renderApp(`${monthKeyFromDate(target.pickup_date)}은(는) 검토 완료되어 삭제할 수 없습니다.`,'err'); if(!confirm('수거 등록 데이터를 삭제하시겠습니까?')) return; const {error}=await sb.from(PICKUP_TABLE).delete().eq('id',id); if(error) return renderApp('수거 등록 삭제 실패: '+error.message,'err'); await logActivity('delete','pickup',id,{}); await loadAll('수거 등록 삭제 완료','ok');}
+
+async function toggleWriterApproval(monthKey){
+  const row = getApprovalRow(monthKey);
+  if(row?.writer_signed_at){
+    if(!confirm(`${monthKey} 작성자 결재를 취소하시겠습니까?`)) return;
+    return unsignWriter(monthKey);
+  }
+  return signWriter(monthKey);
+}
+
+async function toggleReviewerApproval(monthKey){
+  const row = getApprovalRow(monthKey);
+  if(row?.reviewer_signed_at){
+    if(!confirm(`${monthKey} 검토자 결재를 취소하시겠습니까?`)) return;
+    return unsignReviewer(monthKey);
+  }
+  return signReviewer(monthKey);
+}
+
 async function signWriter(monthKey){if(!canWriterApprove()) return renderApp('작성자 결재 권한이 없습니다.','err'); const row=getApprovalRow(monthKey); if(row?.writer_signed_at) return renderApp('이미 작성자 결재가 완료된 월입니다.','err'); const payload={month_key:monthKey,writer_email:user.email,writer_signed_at:new Date().toISOString(),is_locked:false}; let result; if(row) result=await sb.from(APPROVAL_TABLE).update(payload).eq('month_key',monthKey); else result=await sb.from(APPROVAL_TABLE).insert([payload]); if(result.error) return renderApp('작성자 결재 실패: '+result.error.message,'err'); await logApprovalAction(monthKey,'writer_sign'); await loadAll('작성자 결재 완료','ok');}
 async function unsignWriter(monthKey){if(!canWriterApprove()) return renderApp('작성자 결재 취소 권한이 없습니다.','err'); const row=getApprovalRow(monthKey); if(!row?.writer_signed_at) return renderApp('작성자 결재 정보가 없습니다.','err'); if(row?.reviewer_signed_at) return renderApp('검토자 결재를 먼저 취소해야 합니다.','err'); const {error}=await sb.from(APPROVAL_TABLE).update({writer_email:null,writer_signed_at:null,is_locked:false}).eq('month_key',monthKey); if(error) return renderApp('작성자 결재 취소 실패: '+error.message,'err'); await logApprovalAction(monthKey,'writer_unsign'); await loadAll('작성자 결재 취소 완료','ok');}
 async function signReviewer(monthKey){if(!canReviewerApprove()) return renderApp('검토자 결재 권한이 없습니다.','err'); const row=getApprovalRow(monthKey); if(!row?.writer_signed_at) return renderApp('작성자 결재가 먼저 필요합니다.','err'); if(row?.reviewer_signed_at) return renderApp('이미 검토자 결재가 완료된 월입니다.','err'); const {error}=await sb.from(APPROVAL_TABLE).update({reviewer_email:user.email,reviewer_signed_at:new Date().toISOString(),is_locked:true}).eq('month_key',monthKey); if(error) return renderApp('검토자 결재 실패: '+error.message,'err'); await logApprovalAction(monthKey,'reviewer_sign'); await loadAll('검토자 결재 완료 / 월 잠금','ok');}
@@ -495,6 +529,6 @@ function downloadMonthlyReportPdf(){if(!canDownload()) return renderApp('월보�
 function downloadYearlyReportPdf(){if(!canDownload()) return renderApp('연보고서 출력 권한이 없습니다.','err'); const year=yearlyReportFilter||getDefaultYearlyReportYear(); if(!year) return renderApp('연보고서 기준 연도가 없습니다.','err'); openReportPrintWindow(buildYearlyReportHtml(year));}
 function downloadMonthlyExcel(){if(!canDownload()) return renderApp('엑셀 다운로드 권한이 없습니다.','err'); const month=document.getElementById('ledger-month')?.value||ledgerMonthFilter||monthKeyFromDate(new Date().toISOString().slice(0,10)); const stats=getDerivedStats(); const ledgerRows=[...stats.enrichedDaily].filter(r=>monthKeyFromDate(r.date)===month).sort((a,b)=>String(b.date).localeCompare(String(a.date))||String(b.created_at||'').localeCompare(String(a.created_at||''))); const pickupFiltered=pickupRows.filter(r=>monthKeyFromDate(r.pickup_date)===month).sort((a,b)=>String(b.pickup_date).localeCompare(String(a.pickup_date))||String(b.created_at||'').localeCompare(String(a.created_at||''))); const logsFiltered=logRows.filter(r=>monthKeyFromDate(r.created_at)===month); const sheet1=[['날짜','용수전일','용수금일','당일사용량','저장고높이','외부보관','계산용총높이','금일지침','총발생량','수거정보','기타'],...ledgerRows.map(r=>[r.date,formatNum(r.water_prev,2),formatNum(r.usage,2),formatNum(r.water_used,2),formatNum(r.height,1),r.has_external?`${formatNum(r.external_ton||0,1)}T / ${formatNum(r.external_cm,1)}cm`:'-',formatNum(r.total_cm,1),r.guideline_text,r.generated_text,r.pickup?`위탁 ${formatNum(r.pickup.entrusted_amount,2)} / 후높이 ${String(r.pickup.after_pickup_cm??'-')}`:'-',r.note||''])]; const sheet2=[['수거일','구분','세부내용','확인서번호','처리업소','비고'],...pickupFiltered.map(r=>[r.pickup_date,r.pickup_type||'폐수',getPickupDetailText(r),r.certificate_no||'',r.contractor||'',r.note||''])]; const sheet3=[['시간','사용자','동작','대상','상세'],...logsFiltered.map(r=>[r.created_at||'',r.actor_email||'',r.action||'',`${r.target_type||''}/${r.target_id||''}`,r.details||''])]; const workbookHtml=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"></head><body>${tableToHtml('운영일지',sheet1)}<br/><br/>${tableToHtml('수거등록',sheet2)}<br/><br/>${tableToHtml('로그',sheet3)}</body></html>`; downloadFile(`폐수운영일지_${month}.xls`,workbookHtml,'application/vnd.ms-excel;charset=utf-8;');}
 function tableToHtml(title,rows){return `<table border="1"><tr><th colspan="${rows[0]?.length||1}" style="background:#dbe5f1;">${escapeHtml(title)}</th></tr>${rows.map((row,idx)=>`<tr>${row.map(cell=>idx===0?`<th>${escapeHtml(cell)}</th>`:`<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}</table>`;}
-window.login=login; window.signup=signup; window.logout=logout; window.saveReferenceDoc=saveReferenceDoc; window.formatText=formatText; window.switchTab=switchTab; window.changeLedgerMonth=changeLedgerMonth; window.changePickupYear=changePickupYear; window.changePickupTypeFilter=changePickupTypeFilter; window.changeYearlyReportYear=changeYearlyReportYear; window.changeRefTab=changeRefTab; window.changeRefSearch=changeRefSearch; window.setPickupType=setPickupType; window.togglePickupType=togglePickupType; window.updateDailyPreview=updateDailyPreview; window.toggleExternalBox=toggleExternalBox; window.saveDailyRow=saveDailyRow; window.savePickupRow=savePickupRow; window.deleteDailyRow=deleteDailyRow; window.deletePickupRow=deletePickupRow; window.signWriter=signWriter; window.unsignWriter=unsignWriter; window.signReviewer=signReviewer; window.unsignReviewer=unsignReviewer; window.resetApproval=resetApproval; window.changeRole=changeRole; window.uploadSignatureForUser=uploadSignatureForUser; window.transferAdmin=transferAdmin; window.seedSampleData=seedSampleData; window.downloadMonthlyExcel=downloadMonthlyExcel; window.downloadMonthlyReportPdf=downloadMonthlyReportPdf; window.downloadYearlyReportPdf=downloadYearlyReportPdf;
+window.login=login; window.signup=signup; window.logout=logout; window.saveReferenceDoc=saveReferenceDoc; window.toggleWriterApproval=toggleWriterApproval; window.toggleReviewerApproval=toggleReviewerApproval; window.formatText=formatText; window.switchTab=switchTab; window.changeLedgerMonth=changeLedgerMonth; window.changePickupYear=changePickupYear; window.changePickupTypeFilter=changePickupTypeFilter; window.changeYearlyReportYear=changeYearlyReportYear; window.changeRefTab=changeRefTab; window.changeRefSearch=changeRefSearch; window.setPickupType=setPickupType; window.togglePickupType=togglePickupType; window.updateDailyPreview=updateDailyPreview; window.toggleExternalBox=toggleExternalBox; window.saveDailyRow=saveDailyRow; window.savePickupRow=savePickupRow; window.deleteDailyRow=deleteDailyRow; window.deletePickupRow=deletePickupRow; window.signWriter=signWriter; window.unsignWriter=unsignWriter; window.signReviewer=signReviewer; window.unsignReviewer=unsignReviewer; window.resetApproval=resetApproval; window.changeRole=changeRole; window.uploadSignatureForUser=uploadSignatureForUser; window.transferAdmin=transferAdmin; window.seedSampleData=seedSampleData; window.downloadMonthlyExcel=downloadMonthlyExcel; window.downloadMonthlyReportPdf=downloadMonthlyReportPdf; window.downloadYearlyReportPdf=downloadYearlyReportPdf;
 init();
 </script></body></html>
