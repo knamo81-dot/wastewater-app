@@ -110,6 +110,9 @@ table{width:100%;border-collapse:collapse;min-width:1100px;background:#fff} th,t
 .editor-select{width:auto;min-width:110px}
 .doc-html p{margin:0 0 10px}
 
+.rich-toolbar-group{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.rich-toolbar .btn.icon{min-width:44px;padding:9px 12px}
+
 </style>
 </head>
 <body>
@@ -383,17 +386,32 @@ function execEditorCommand(command, value=null){
   document.execCommand(command, false, value);
 }
 
-function applyEditorFontSize(value){
+function wrapSelectionWithStyle(styleObj){
   const editor = document.getElementById('ref-body-input');
-  if(!editor || !value) return;
+  if(!editor) return;
   editor.focus();
-  document.execCommand('styleWithCSS', false, true);
-  document.execCommand('fontSize', false, '7');
-  const fonts = editor.querySelectorAll('font[size="7"]');
-  fonts.forEach(node=>{
-    node.removeAttribute('size');
-    node.style.fontSize = value;
-  });
+  const sel = window.getSelection();
+  if(!sel || sel.rangeCount===0) return;
+  const range = sel.getRangeAt(0);
+  if(range.collapsed) return;
+  const span = document.createElement('span');
+  Object.entries(styleObj||{}).forEach(([k,v])=>{ span.style[k] = v; });
+  try{
+    range.surroundContents(span);
+    sel.removeAllRanges();
+    const newRange = document.createRange();
+    newRange.selectNodeContents(span);
+    sel.addRange(newRange);
+  }catch(e){
+    const contents = range.extractContents();
+    span.appendChild(contents);
+    range.insertNode(span);
+  }
+}
+
+function applyEditorFontSize(value){
+  if(!value) return;
+  wrapSelectionWithStyle({fontSize:value});
 }
 
 function applyEditorLineHeight(value){
@@ -407,7 +425,7 @@ function applyEditorLineHeight(value){
   }
   let target = sel.anchorNode;
   if(target && target.nodeType===3) target = target.parentElement;
-  while(target && target!==editor && !/^(P|DIV|LI|H1|H2|H3|BLOCKQUOTE)$/i.test(target.tagName||'')){
+  while(target && target!==editor && !/^(P|DIV|LI|H1|H2|H3|BLOCKQUOTE|SPAN)$/i.test(target.tagName||'')){
     target = target.parentElement;
   }
   if(!target || target===editor){
@@ -415,6 +433,30 @@ function applyEditorLineHeight(value){
   }else{
     target.style.lineHeight = value;
   }
+}
+
+function editorUndo(){ execEditorCommand('undo'); }
+function editorRedo(){ execEditorCommand('redo'); }
+
+function insertEditorLink(){
+  const url = prompt('링크 주소를 입력하세요', 'https://');
+  if(!url) return;
+  execEditorCommand('createLink', url);
+}
+
+function triggerEditorImageUpload(){
+  const input = document.getElementById('ref-image-upload');
+  if(input) input.click();
+}
+
+function handleEditorImage(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(){
+    const src = reader.result;
+    execEditorCommand('insertImage', src);
+  };
+  reader.readAsDataURL(file);
 }
 
 function formatText(type){
@@ -486,24 +528,45 @@ function renderReferenceContent(){
             <div class="field">
               <label>문서 본문</label>
               <div class="rich-toolbar">
-                <button type="button" class="btn soft" onclick="formatText('bold')"><b>B</b></button>
-                <select class="select editor-select" onchange="applyEditorFontSize(this.value)">
-                  <option value="">폰트크기</option>
-                  <option value="13px">작게</option>
-                  <option value="15px">기본</option>
-                  <option value="18px">크게</option>
-                  <option value="22px">아주 크게</option>
-                </select>
-                <select class="select editor-select" onchange="applyEditorLineHeight(this.value)">
-                  <option value="">줄간격</option>
-                  <option value="1.4">좁게</option>
-                  <option value="1.7">기본</option>
-                  <option value="2.0">넓게</option>
-                  <option value="2.3">아주 넓게</option>
-                </select>
-                <button type="button" class="btn soft" onclick="formatText('left')">좌측</button>
-                <button type="button" class="btn soft" onclick="formatText('center')">가운데</button>
-                <button type="button" class="btn soft" onclick="formatText('right')">우측</button>
+                <div class="rich-toolbar-group">
+                  <button type="button" class="btn soft icon" onclick="editorUndo()" title="뒤로가기">↶</button>
+                  <button type="button" class="btn soft icon" onclick="editorRedo()" title="앞으로가기">↷</button>
+                  <button type="button" class="btn soft icon" onclick="formatText('bold')"><b>B</b></button>
+                </div>
+                <div class="rich-toolbar-group">
+                  <select class="select editor-select" onchange="applyEditorFontSize(this.value)">
+                    <option value="">폰트크기</option>
+                    <option value="12px">12</option>
+                    <option value="13px">13</option>
+                    <option value="14px">14</option>
+                    <option value="15px">15</option>
+                    <option value="16px">16</option>
+                    <option value="18px">18</option>
+                    <option value="20px">20</option>
+                    <option value="24px">24</option>
+                    <option value="28px">28</option>
+                    <option value="32px">32</option>
+                  </select>
+                  <select class="select editor-select" onchange="applyEditorLineHeight(this.value)">
+                    <option value="">줄간격</option>
+                    <option value="1.2">1.2</option>
+                    <option value="1.4">1.4</option>
+                    <option value="1.6">1.6</option>
+                    <option value="1.8">1.8</option>
+                    <option value="2.0">2.0</option>
+                    <option value="2.3">2.3</option>
+                  </select>
+                </div>
+                <div class="rich-toolbar-group">
+                  <button type="button" class="btn soft" onclick="formatText('left')">좌측</button>
+                  <button type="button" class="btn soft" onclick="formatText('center')">가운데</button>
+                  <button type="button" class="btn soft" onclick="formatText('right')">우측</button>
+                </div>
+                <div class="rich-toolbar-group">
+                  <button type="button" class="btn soft" onclick="insertEditorLink()">링크</button>
+                  <button type="button" class="btn soft" onclick="triggerEditorImageUpload()">이미지</button>
+                  <input id="ref-image-upload" type="file" accept="image/*" style="display:none" onchange="handleEditorImage(this.files[0]); this.value='';">
+                </div>
               </div>
               <div id="ref-body-input" class="rich-editor" contenteditable="true" data-placeholder="문서 내용을 입력하세요.">${normalizeReferenceBodyForEditor(body)}</div>
             </div>
@@ -787,6 +850,6 @@ function downloadMonthlyReportPdf(){if(!canDownload()) return renderApp('월보�
 function downloadYearlyReportPdf(){if(!canDownload()) return renderApp('연보고서 출력 권한이 없습니다.','err'); const year=yearlyReportFilter||getDefaultYearlyReportYear(); if(!year) return renderApp('연보고서 기준 연도가 없습니다.','err'); openReportPrintWindow(buildYearlyReportHtml(year));}
 function downloadMonthlyExcel(){if(!canDownload()) return renderApp('엑셀 다운로드 권한이 없습니다.','err'); const month=document.getElementById('ledger-month')?.value||ledgerMonthFilter||monthKeyFromDate(new Date().toISOString().slice(0,10)); const stats=getDerivedStats(); const ledgerRows=[...stats.enrichedDaily].filter(r=>monthKeyFromDate(r.date)===month).sort((a,b)=>String(b.date).localeCompare(String(a.date))||String(b.created_at||'').localeCompare(String(a.created_at||''))); const pickupFiltered=pickupRows.filter(r=>monthKeyFromDate(r.pickup_date)===month).sort((a,b)=>String(b.pickup_date).localeCompare(String(a.pickup_date))||String(b.created_at||'').localeCompare(String(a.created_at||''))); const logsFiltered=logRows.filter(r=>monthKeyFromDate(r.created_at)===month); const sheet1=[['날짜','용수전일','용수금일','당일사용량','저장고높이','외부보관','계산용총높이','금일지침','총발생량','수거정보','기타'],...ledgerRows.map(r=>[r.date,formatNum(r.water_prev,2),formatNum(r.usage,2),formatNum(r.water_used,2),formatNum(r.height,1),r.has_external?`${formatNum(r.external_ton||0,1)}T / ${formatNum(r.external_cm,1)}cm`:'-',formatNum(r.total_cm,1),r.guideline_text,r.generated_text,r.pickup?`위탁 ${formatNum(r.pickup.entrusted_amount,2)} / 후높이 ${String(r.pickup.after_pickup_cm??'-')}`:'-',r.note||''])]; const sheet2=[['수거일','구분','세부내용','확인서번호','처리업소','비고'],...pickupFiltered.map(r=>[r.pickup_date,r.pickup_type||'폐수',getPickupDetailText(r),r.certificate_no||'',r.contractor||'',r.note||''])]; const sheet3=[['시간','사용자','동작','대상','상세'],...logsFiltered.map(r=>[r.created_at||'',r.actor_email||'',r.action||'',`${r.target_type||''}/${r.target_id||''}`,r.details||''])]; const workbookHtml=`<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="UTF-8"></head><body>${tableToHtml('운영일지',sheet1)}<br/><br/>${tableToHtml('수거등록',sheet2)}<br/><br/>${tableToHtml('로그',sheet3)}</body></html>`; downloadFile(`폐수운영일지_${month}.xls`,workbookHtml,'application/vnd.ms-excel;charset=utf-8;');}
 function tableToHtml(title,rows){return `<table border="1"><tr><th colspan="${rows[0]?.length||1}" style="background:#dbe5f1;">${escapeHtml(title)}</th></tr>${rows.map((row,idx)=>`<tr>${row.map(cell=>idx===0?`<th>${escapeHtml(cell)}</th>`:`<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}</table>`;}
-window.login=login; window.signup=signup; window.logout=logout; window.sendApprovalMail=sendApprovalMail; window.saveReferenceDoc=saveReferenceDoc; window.toggleWriterApproval=toggleWriterApproval; window.toggleReviewerApproval=toggleReviewerApproval; window.sendReviewerRequestMail=sendReviewerRequestMail; window.formatText=formatText; window.applyEditorFontSize=applyEditorFontSize; window.applyEditorLineHeight=applyEditorLineHeight; window.execEditorCommand=execEditorCommand; window.switchTab=switchTab; window.changeLedgerMonth=changeLedgerMonth; window.changePickupYear=changePickupYear; window.changePickupTypeFilter=changePickupTypeFilter; window.changeYearlyReportYear=changeYearlyReportYear; window.changeRefTab=changeRefTab; window.changeRefSearch=changeRefSearch; window.setPickupType=setPickupType; window.togglePickupType=togglePickupType; window.updateDailyPreview=updateDailyPreview; window.toggleExternalBox=toggleExternalBox; window.saveDailyRow=saveDailyRow; window.savePickupRow=savePickupRow; window.deleteDailyRow=deleteDailyRow; window.deletePickupRow=deletePickupRow; window.signWriter=signWriter; window.unsignWriter=unsignWriter; window.signReviewer=signReviewer; window.unsignReviewer=unsignReviewer; window.resetApproval=resetApproval; window.changeRole=changeRole; window.uploadSignatureForUser=uploadSignatureForUser; window.transferAdmin=transferAdmin; window.seedSampleData=seedSampleData; window.downloadMonthlyExcel=downloadMonthlyExcel; window.downloadMonthlyReportPdf=downloadMonthlyReportPdf; window.downloadYearlyReportPdf=downloadYearlyReportPdf;
+window.login=login; window.signup=signup; window.logout=logout; window.sendApprovalMail=sendApprovalMail; window.saveReferenceDoc=saveReferenceDoc; window.toggleWriterApproval=toggleWriterApproval; window.toggleReviewerApproval=toggleReviewerApproval; window.sendReviewerRequestMail=sendReviewerRequestMail; window.formatText=formatText; window.applyEditorFontSize=applyEditorFontSize; window.applyEditorLineHeight=applyEditorLineHeight; window.execEditorCommand=execEditorCommand; window.editorUndo=editorUndo; window.editorRedo=editorRedo; window.insertEditorLink=insertEditorLink; window.triggerEditorImageUpload=triggerEditorImageUpload; window.handleEditorImage=handleEditorImage; window.switchTab=switchTab; window.changeLedgerMonth=changeLedgerMonth; window.changePickupYear=changePickupYear; window.changePickupTypeFilter=changePickupTypeFilter; window.changeYearlyReportYear=changeYearlyReportYear; window.changeRefTab=changeRefTab; window.changeRefSearch=changeRefSearch; window.setPickupType=setPickupType; window.togglePickupType=togglePickupType; window.updateDailyPreview=updateDailyPreview; window.toggleExternalBox=toggleExternalBox; window.saveDailyRow=saveDailyRow; window.savePickupRow=savePickupRow; window.deleteDailyRow=deleteDailyRow; window.deletePickupRow=deletePickupRow; window.signWriter=signWriter; window.unsignWriter=unsignWriter; window.signReviewer=signReviewer; window.unsignReviewer=unsignReviewer; window.resetApproval=resetApproval; window.changeRole=changeRole; window.uploadSignatureForUser=uploadSignatureForUser; window.transferAdmin=transferAdmin; window.seedSampleData=seedSampleData; window.downloadMonthlyExcel=downloadMonthlyExcel; window.downloadMonthlyReportPdf=downloadMonthlyReportPdf; window.downloadYearlyReportPdf=downloadYearlyReportPdf;
 init();
 </script></body></html>
