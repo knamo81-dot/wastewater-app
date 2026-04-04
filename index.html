@@ -192,9 +192,7 @@ function getDefaultReferenceMap(){
 function applyUrlState(){
   try{
     const params = new URLSearchParams(location.search);
-    const tab = params.get('tab');
     const month = params.get('month');
-    if(tab) currentTab = tab;
     if(month) ledgerMonthFilter = month;
   }catch(e){}
 }
@@ -262,11 +260,43 @@ async function sendApprovalMail(monthKey){
   }
 }
 
-async function init(){applyUrlState(); const {data}=await sb.auth.getSession(); if(!data.session) return renderLogin(); user=data.session.user; const userRow=await getUserRowByEmail(user.email); if(!userRow){await sb.auth.signOut(); return renderLogin('관리자 승인된 계정만 로그인할 수 있습니다.','err');} if(userRow.approved===false){await sb.auth.signOut(); return renderLogin('관리자 승인 후 로그인 가능합니다.','err');} await loadMyRole(); await loadAll(); syncUrlState();}
+async function init(){
+  currentTab = 'daily';
+  ledgerMonthFilter = '';
+  pickupYearFilter = '';
+  pickupTypeFilter = '전체';
+  yearlyReportFilter = '';
+  refTab = 'facilities';
+  refSearch = '';
+
+  applyUrlState();
+
+  const {data}=await sb.auth.getSession();
+  if(!data.session) return renderLogin();
+
+  user=data.session.user;
+  const userRow=await getUserRowByEmail(user.email);
+  if(!userRow){
+    await sb.auth.signOut();
+    return renderLogin('관리자 승인된 계정만 로그인할 수 있습니다.','err');
+  }
+  if(userRow.approved===false){
+    await sb.auth.signOut();
+    return renderLogin('관리자 승인 후 로그인 가능합니다.','err');
+  }
+
+  await loadMyRole();
+  await loadAll();
+  syncUrlState();
+}
 function renderLogin(message='',cls='muted'){document.getElementById('app').innerHTML=`<div class="login-wrap"><div class="card login-card"><h2>로그인</h2><div class="field"><label>이메일</label><input id="email" class="input" placeholder="이메일" /></div><div class="field"><label>비밀번호</label><input id="password" class="input" type="password" placeholder="비밀번호" /></div><div class="actions-row"><button class="btn primary" onclick="login()">로그인</button><button class="btn soft" onclick="signup()">회원가입</button></div><div class="msg ${cls}">${escapeHtml(message||'회원가입 후 관리자 승인 완료 시 로그인할 수 있습니다.')}</div></div></div>`;}
 async function login(){const email=document.getElementById('email').value.trim(); const password=document.getElementById('password').value; const {error}=await sb.auth.signInWithPassword({email,password}); if(error) return renderLogin(error.message,'err'); const userRow=await getUserRowByEmail(email); if(!userRow){await sb.auth.signOut(); return renderLogin('관리자 승인된 계정만 로그인할 수 있습니다.','err');} if(userRow.approved===false){await sb.auth.signOut(); return renderLogin('관리자 승인 후 로그인 가능합니다.','err');} await init();}
 async function signup(){const email=document.getElementById('email').value.trim(); const password=document.getElementById('password').value; const {error}=await sb.auth.signUp({email,password}); if(error) return renderLogin(error.message,'err'); await ensureUserRow(email); renderLogin('회원가입 신청 완료. 관리자 승인 후 로그인 가능합니다.','ok');}
-async function logout(){await sb.auth.signOut(); location.reload();}
+async function logout(){
+  await sb.auth.signOut();
+  history.replaceState({}, '', location.pathname);
+  location.reload();
+}
 async function getUserRowByEmail(email){const {data,error}=await sb.from(USERS_TABLE).select('*').eq('email',email).maybeSingle(); if(error) return null; return data||null;}
 async function ensureUserRow(email){const {data,error}=await sb.from(USERS_TABLE).select('email,approved').eq('email',email).maybeSingle(); if(error) return; if(!data) await sb.from(USERS_TABLE).insert([{email,role:'user',approved:false}]);}
 async function loadMyRole(){const {data}=await sb.from(USERS_TABLE).select('role,approved').eq('email',user.email).maybeSingle(); currentRole=data?.role||'user'; if(data?.approved===false){await sb.auth.signOut(); renderLogin('관리자 승인 후 로그인 가능합니다.','err');}}
